@@ -9,6 +9,12 @@ const screens = {
   },
   Dashboard: {
     screen: Dashboard,
+	//user
+	navigationOptions: ({ navigation }) => {
+      return {
+        user: navigation.getParam("user"),
+      };
+    },
   },
 };
 

@@ -44,9 +44,9 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: "Invalid credentials" });
       return;
     }
-
-    //No field erros, then go to dashboard
-    navigation.replace("Dashboard");
+	//pass user id to dashboard
+	
+    navigation.replace("Dashboard", { user: user });
   };
 
   return (
