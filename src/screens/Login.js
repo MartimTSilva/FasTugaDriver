@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
@@ -9,7 +9,8 @@ import TextInput from "../components/TextInput";
 import { theme } from "../core/theme";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
-import { database } from "../data/database";
+import { auth } from "../../firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: "", error: "" });
@@ -26,7 +27,6 @@ export default function LoginScreen({ navigation }) {
   }
 
   const onLoginPressed = () => {
-    console.log('TESTE:', !!email.error, !email.error, email.error);
     //Validate email + password fields
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
@@ -38,15 +38,25 @@ export default function LoginScreen({ navigation }) {
       return;
     }
 
-    const user = database.findUserByEmail(email.value);
-    if (!user || user.password != password.value) {
-      setEmail({ ...email, error: "Invalid credentials" });
-      setPassword({ ...password, error: "Invalid credentials" });
-      return;
-    }
-	//pass user id to dashboard
-	
-    navigation.replace("Dashboard", { user: user });
+    auth()
+      .signInWithEmailAndPassword(email.value, password.value)
+      .then((userData) => {
+        AsyncStorage.setItem(
+          "@userData",
+          JSON.stringify({ id: userData.user.uid, email: userData.user.email })
+        );
+        navigation.replace("Dashboard");
+      })
+      .catch((error) => {
+        if (
+          error.code == "auth/wrong-password" ||
+          error.code == "auth/user-not-found"
+        ) {
+          setEmail({ ...email, error: "Invalid credentials" });
+          setPassword({ ...password, error: "Invalid credentials" });
+          return;
+        }
+      });
   };
 
   return (
@@ -76,7 +86,7 @@ export default function LoginScreen({ navigation }) {
       </Button>
       <View style={styles.row}>
         <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.push("Register")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>
       </View>
@@ -90,8 +100,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 50,
   },
+
   link: {
     fontWeight: "bold",
     color: theme.colors.primary,
+  },
+
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    paddingBottom: 100,
   },
 });

@@ -1,15 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-// import navigation
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, Button } from "react-native";
 
 export default function Dashboard({ navigation }) {
-	// fetch user from navigation
-	const user = navigation.getParam("user");
-	console.log(user);
+  const onLogout = () => {
+    AsyncStorage.removeItem("@userData");
+    navigation.replace("Login");
+  };
+
   return (
     <View style={styles.container}>
-      <Text>Hello {user.name}!</Text>
-      <StatusBar style="auto"/>
+      <Text>Hello !</Text>
+      <Button onPress={onLogout} title="Logout"></Button>
+      <StatusBar style="auto" />
     </View>
   );
 }
@@ -17,7 +20,7 @@ export default function Dashboard({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
