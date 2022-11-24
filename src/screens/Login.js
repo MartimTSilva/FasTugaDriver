@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
+import { ActivityIndicator, Text } from "react-native-paper";
 
 import Background from "../components/Background";
 import Logo from "../components/Logo";
@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
+  const [isLoading, setLoading] = useState(false);
 
   function emailHandler(enteredText) {
     setEmail({ value: enteredText, error: "" });
@@ -27,12 +28,15 @@ export default function LoginScreen({ navigation }) {
   }
 
   const onLoginPressed = () => {
+    setLoading(true);
+
     //Validate email + password fields
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
 
     //Show field errors if exists
     if (emailError || passwordError) {
+      setLoading(false);
       setEmail({ ...email, error: emailError });
       setPassword({ ...password, error: passwordError });
       return;
@@ -48,6 +52,7 @@ export default function LoginScreen({ navigation }) {
         navigation.replace("Dashboard");
       })
       .catch((error) => {
+        setLoading(false);
         if (
           error.code == "auth/wrong-password" ||
           error.code == "auth/user-not-found"
@@ -71,6 +76,7 @@ export default function LoginScreen({ navigation }) {
         autoCapitalize="none" //First char lowercase
         keyboardType="email-address"
         returnKeyType="next"
+        editable={!isLoading}
       />
       <TextInput
         label="Password"
@@ -80,8 +86,9 @@ export default function LoginScreen({ navigation }) {
         errorText={password.error}
         returnKeyType="done"
         secureTextEntry //obscures the password entered ***
+        editable={!isLoading}
       />
-      <Button mode="contained" onPress={onLoginPressed}>
+      <Button mode="contained" onPress={onLoginPressed} disabled={isLoading}>
         Login
       </Button>
       <View style={styles.row}>
@@ -90,6 +97,13 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>
       </View>
+      {isLoading && (
+        <ActivityIndicator
+          style={styles.loading}
+          size="large"
+          color={theme.colors.primary}
+        />
+      )}
     </Background>
   );
 }
@@ -107,8 +121,13 @@ const styles = StyleSheet.create({
   },
 
   loading: {
-    flex: 1,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: "center",
     justifyContent: "center",
-    paddingBottom: 100,
+    backgroundColor: "#F5FCFF88",
   },
 });
