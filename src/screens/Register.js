@@ -11,7 +11,6 @@ import Loading from "../components/Loading";
 import { auth, db } from "../../firebase";
 import { successToast } from "../core/theme";
 import { useToast } from "react-native-styled-toast";
-import Background from "../components/Background";
 
 const reviewSchema = yup.object({
   email: yup.string().email().required(),
@@ -69,115 +68,109 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <Background>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          paddingVertical: 30,
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        paddingVertical: 30,
+      }}
+    >
+      <Formik
+        initialValues={{
+          email: "",
+          name: "",
+          phone: "",
+          plate: "",
+          password: "",
+          confirmPassword: "",
         }}
+        validationSchema={reviewSchema}
+        onSubmit={(values) => onRegisterPress(values)}
       >
-        <Formik
-          initialValues={{
-            email: "",
-            name: "",
-            phone: "",
-            plate: "",
-            password: "",
-            confirmPassword: "",
-          }}
-          validationSchema={reviewSchema}
-          onSubmit={(values) => onRegisterPress(values)}
-        >
-          {(props) => (
-            <View style={styles.form}>
-              <Logo />
-              <TextInput
-                label="Email"
-                value={props.values.email}
-                onChangeText={props.handleChange("email")}
-                error={props.touched.email && props.errors.email && emailError}
-                errorText={
-                  props.touched.email &&
-                  (capitalize(props.errors.email) || emailError)
-                }
-                autoCapitalize="none" //First char lowercase
-                returnKeyType="next"
-                keyboardType="email-address"
-                editable={!isLoading}
-              ></TextInput>
-              <TextInput
-                label="Name"
-                value={props.values.name}
-                onChangeText={props.handleChange("name")}
-                error={props.touched.name && props.errors.name}
-                errorText={props.touched.name && capitalize(props.errors.name)}
-                returnKeyType="next"
-                editable={!isLoading}
-              ></TextInput>
-              <TextInput
-                label="Phone"
-                value={props.values.phone}
-                onChangeText={props.handleChange("phone")}
-                error={props.touched.phone && props.errors.phone}
-                errorText={
-                  props.touched.phone && capitalize(props.errors.phone)
-                }
-                keyboardType="phone-pad"
-                returnKeyType="next"
-                editable={!isLoading}
-              ></TextInput>
-              <TextInput
-                label="License Plate"
-                value={props.values.plate}
-                onChangeText={props.handleChange("plate")}
-                error={props.touched.plate && props.errors.plate}
-                errorText={
-                  props.touched.plate && capitalize(props.errors.plate)
-                }
-                returnKeyType="next"
-                editable={!isLoading}
-              ></TextInput>
-              <TextInput
-                label="Password"
-                value={props.values.password}
-                onChangeText={props.handleChange("password")}
-                error={props.touched.password && props.errors.password}
-                errorText={
-                  props.touched.password && capitalize(props.errors.password)
-                }
-                returnKeyType="next"
-                secureTextEntry
-                editable={!isLoading}
-              ></TextInput>
-              <TextInput
-                label="Confirm Password"
-                value={props.values.confirmPassword}
-                onChangeText={props.handleChange("confirmPassword")}
-                error={
-                  props.touched.confirmPassword && props.errors.confirmPassword
-                }
-                errorText={
-                  props.touched.confirmPassword &&
-                  capitalize(props.errors.confirmPassword)
-                }
-                returnKeyType="done"
-                secureTextEntry
-                editable={!isLoading}
-              ></TextInput>
-              <Button
-                mode="contained"
-                disabled={isLoading}
-                onPress={props.handleSubmit}
-              >
-                Create Account
-              </Button>
-            </View>
-          )}
-        </Formik>
-        {isLoading && <Loading />}
-      </ScrollView>
-    </Background>
+        {(props) => (
+          <View style={styles.form}>
+            <Logo />
+            <TextInput
+              label="Email"
+              value={props.values.email}
+              onChangeText={props.handleChange("email")}
+              error={props.touched.email && props.errors.email && emailError}
+              errorText={
+                props.touched.email &&
+                (capitalize(props.errors.email) || emailError)
+              }
+              autoCapitalize="none" //First char lowercase
+              returnKeyType="next"
+              keyboardType="email-address"
+              editable={!isLoading}
+            ></TextInput>
+            <TextInput
+              label="Name"
+              value={props.values.name}
+              onChangeText={props.handleChange("name")}
+              error={props.touched.name && props.errors.name}
+              errorText={props.touched.name && capitalize(props.errors.name)}
+              returnKeyType="next"
+              editable={!isLoading}
+            ></TextInput>
+            <TextInput
+              label="Phone"
+              value={props.values.phone}
+              onChangeText={props.handleChange("phone")}
+              error={props.touched.phone && props.errors.phone}
+              errorText={props.touched.phone && capitalize(props.errors.phone)}
+              keyboardType="phone-pad"
+              returnKeyType="next"
+              editable={!isLoading}
+            ></TextInput>
+            <TextInput
+              label="License Plate"
+              value={props.values.plate}
+              onChangeText={props.handleChange("plate")}
+              error={props.touched.plate && props.errors.plate}
+              errorText={props.touched.plate && capitalize(props.errors.plate)}
+              returnKeyType="next"
+              editable={!isLoading}
+            ></TextInput>
+            <TextInput
+              label="Password"
+              value={props.values.password}
+              onChangeText={props.handleChange("password")}
+              error={props.touched.password && props.errors.password}
+              errorText={
+                props.touched.password && capitalize(props.errors.password)
+              }
+              returnKeyType="next"
+              secureTextEntry
+              editable={!isLoading}
+            ></TextInput>
+            <TextInput
+              label="Confirm Password"
+              value={props.values.confirmPassword}
+              onChangeText={props.handleChange("confirmPassword")}
+              error={
+                props.touched.confirmPassword && props.errors.confirmPassword
+              }
+              errorText={
+                props.touched.confirmPassword &&
+                capitalize(props.errors.confirmPassword)
+              }
+              returnKeyType="done"
+              secureTextEntry
+              editable={!isLoading}
+            ></TextInput>
+            <Button
+              mode="contained"
+              disabled={isLoading}
+              onPress={props.handleSubmit}
+            >
+              Create Account
+            </Button>
+          </View>
+        )}
+      </Formik>
+      {isLoading && <Loading />}
+    </ScrollView>
   );
 }
 
