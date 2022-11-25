@@ -11,6 +11,7 @@ import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
 import { auth } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loading from "../components/Loading";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState({ value: "", error: "" });
@@ -97,13 +98,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>
       </View>
-      {isLoading && (
-        <ActivityIndicator
-          style={styles.loading}
-          size="large"
-          color={theme.colors.primary}
-        />
-      )}
+      {isLoading && <Loading />}
     </Background>
   );
 }
@@ -118,16 +113,5 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: "bold",
     color: theme.colors.primary,
-  },
-
-  loading: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F5FCFF88",
   },
 });
