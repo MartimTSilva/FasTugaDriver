@@ -94,7 +94,7 @@ export default function Register({ navigation }) {
               label="Email"
               value={props.values.email}
               onChangeText={props.handleChange("email")}
-              error={props.touched.email && props.errors.email && emailError}
+              error={props.touched.email && (props.errors.email || emailError)}
               errorText={
                 props.touched.email &&
                 (capitalize(props.errors.email) || emailError)
