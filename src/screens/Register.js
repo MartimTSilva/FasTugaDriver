@@ -5,7 +5,7 @@ import { Formik } from "formik";
 import { ScrollView } from "react-native-gesture-handler";
 import Logo from "../components/Logo";
 import * as yup from "yup";
-import { capitalize, phoneRegExp } from "../helpers/helper";
+import { capitalize, phoneRegExp, plateRegExp } from "../helpers/helper";
 import { useState } from "react";
 import Loading from "../components/Loading";
 import { auth, db } from "../../firebase";
@@ -24,7 +24,11 @@ const reviewSchema = yup.object({
     .length(9)
     .matches(phoneRegExp, "Phone number is not valid")
     .required(),
-  plate: yup.string().max(8).required(),
+  plate: yup
+    .string()
+    .max(8)
+    .matches(plateRegExp, "License plate is not valid")
+    .required(),
   password: yup.string().min(6).required(),
   confirmPassword: yup
     .string()
