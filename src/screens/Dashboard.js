@@ -1,7 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, FlatList } from "react-native";
+import OrderList from "../components/OrderList";
+//import  from "../components/FlatList";
+import Paragraph from "../components/Paragraph";
+import { StyleSheet, Text, View, Button, FlatList  } from "react-native";
 import { db } from "../../firebase";
 import {  onSnapshot, collection } from "firebase/firestore";
 export default function Dashboard({ navigation }) {
@@ -57,7 +60,7 @@ export default function Dashboard({ navigation }) {
 	  const deg2rad = (deg) => {
 		return deg * (Math.PI / 180);
 	  };
-  console.log(order[0].delivery_coords)
+  
   
   const formatedOrders = order.map((item)=>{
 	  return {
@@ -68,16 +71,10 @@ export default function Dashboard({ navigation }) {
 	  }
 	    })
 // 
-
   return (
     <View style={styles.container}>
       <Text>Hello {user?.name}!</Text>
-	  <FlatList
-        data={formatedOrders}
-        renderItem={({item}) => <Text style={styles.item}>{item.key}, {item.status},{
-			//round to the first decimal 
-			Math.round(item.distance * 10) / 10}Km</Text>}
-      />
+		<OrderList data={formatedOrders} button="Assign!"></OrderList>
 	  <Button onPress={onLogout} title="Logout"></Button>
       <StatusBar style="auto" />
     </View>
