@@ -30,8 +30,9 @@ export default function Dashboard({ navigation }) {
   }, []);
   //use effect to fetcjh orders that have assigned_dreiver = ""
   useEffect(() => {
-	onSnapshot(collection(db, "orders"), (snapshot)=>{
-		setOrder(snapshot.docs.map((doc)=>
+	db.collection("orders").where("assigned_driver", "==", "").get().then((querySnapshot) => {
+	
+		setOrder(querySnapshot.docs.map((doc)=>
 			//return doc.data(); with doc.id
 			{ return {key: doc.id, ...doc.data()}; }
 		
@@ -79,7 +80,7 @@ export default function Dashboard({ navigation }) {
   return (
     <View style={styles.container}>
       <Text>Hello {user?.name}!</Text>
-		<OrderList data={formatedOrders} button="Assign!"></OrderList>
+		<OrderList data={formatedOrders} button="Assign!" label="Pedidos sem condutores atribuidos "></OrderList>
 	  <Button onPress={onLogout} title="Logout"></Button>
       <StatusBar style="auto" />
     </View>
