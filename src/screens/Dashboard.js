@@ -31,12 +31,15 @@ export default function Dashboard({ navigation }) {
   //use effect to fetcjh orders that have assigned_dreiver = ""
   useEffect(() => {
 	onSnapshot(collection(db, "orders"), (snapshot)=>{
-	
-		setOrder(snapshot.docs.map((doc)=>doc.data()))
+		setOrder(snapshot.docs.map((doc)=>
+			//return doc.data(); with doc.id
+			{ return {key: doc.id, ...doc.data()}; }
+		
+
+		))
 
 	});
   }, []);
-
   const onLogout = () => {
     AsyncStorage.removeItem("@userData");
     navigation.replace("Login");
@@ -63,8 +66,10 @@ export default function Dashboard({ navigation }) {
   
   
   const formatedOrders = order.map((item)=>{
+	//console.log of the item key
 	  return {
-		key: item.id,
+		key: item.key,
+		//key: item,
 		status: item.status,
 		//distancia de bangcock ate ao ponto
 		distance: getDistance(item.delivery_coords.latitude, item.delivery_coords.longitude, 13.75398, 100.50144),
