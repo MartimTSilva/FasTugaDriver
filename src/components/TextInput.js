@@ -18,6 +18,7 @@ export default function TextInput({
         mode="outlined"
         {...props}
         editable={editable}
+        maxLength={30}
       />
       {description && !errorText ? (
         <Text style={styles.description}>{description}</Text>
@@ -30,7 +31,7 @@ export default function TextInput({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginVertical: 8,
+    marginVertical: 5,
   },
   input: {
     backgroundColor: theme.colors.surface,
@@ -43,6 +44,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 13,
     color: theme.colors.error,
-    paddingTop: 8,
+    paddingTop: 5,
   },
 });
