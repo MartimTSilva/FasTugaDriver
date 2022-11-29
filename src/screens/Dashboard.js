@@ -1,19 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import React from 'react';
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
 //import  from "../components/FlatList";
 import Paragraph from "../components/Paragraph";
-import { StyleSheet, Text, View, Button, FlatList  } from "react-native";
+import { RefreshControl, SafeAreaView, ScrollView,StyleSheet, Text, View, Button, FlatList  } from "react-native";
 import { db } from "../../firebase";
 import {  onSnapshot, collection } from "firebase/firestore";
+
 export default function Dashboard({ navigation }) {
   const [user, setUser] = useState(null);
   // get orders from firbebase.js getBlankOrders()
   const [order, setOrder] = useState([]);
-  //fetch orders from firebase
-  
 
+  const [selfOrder, setSelfOrder] = useState([]);
+  //fetch orders from firebase
+  const [refreshing, setRefreshing] = React.useState(false);
+  //on drag down refresh page
   useEffect(() => {
     try {
       AsyncStorage.getItem("@userData").then((data) => {
@@ -24,6 +28,13 @@ export default function Dashboard({ navigation }) {
             if (snapshot.exists) {
               setUser(snapshot.data());
             }
+			
+			db.collection("orders").where("assigned_driver", "==", snapshot.id).get().then((querySnapshot) => {
+				setSelfOrder(querySnapshot.docs.map((doc)=>
+					//return doc.data(); with doc.id
+					{ return {key: doc.id, ...doc.data()}; }
+				))
+			})
           });
       });
     } catch (error) {}
@@ -41,6 +52,7 @@ export default function Dashboard({ navigation }) {
 
 	});
   }, []);
+ 
   const onLogout = () => {
     AsyncStorage.removeItem("@userData");
     navigation.replace("Login");
@@ -65,25 +77,54 @@ export default function Dashboard({ navigation }) {
 		return deg * (Math.PI / 180);
 	  };
   
-  
-  const formatedOrders = order.map((item)=>{
-	//console.log of the item key
-	  return {
-		key: item.key,
-		//key: item,
-		status: item.status,
-		//distancia de bangcock ate ao ponto
-		distance: getDistance(item.delivery_coords.latitude, item.delivery_coords.longitude, 13.75398, 100.50144),
+	
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		[order, setOrder] = useState([]);
+	
+
+		wait(2000).then(() => setRefreshing(false));
+	}, []);
+	const wait = (timeout) => {
+		return new Promise(resolve => setTimeout(resolve, timeout));
 	  }
-	    })
-// 
+	
+
+	  
+	function formatOrders(orderList){
+		function replaceWithIcons(p){
+			switch (p) {
+				case 1:
+					return "○";
+					break;
+			
+				default:
+					return "◉";
+					break;
+			}
+		}
+		return orderList.map((item)=>{
+			return {
+			key: item.key,
+			status: replaceWithIcons(item.status),
+			distance: getDistance(item.delivery_coords.latitude, item.delivery_coords.longitude, 13.75398, 100.50144),
+			}
+		})
+	}
+// <ScrollView keyboardShouldPersistTaps='handled' nestedScrollEnabled={true} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}><SafeAreaView> </ScrollView></SafeAreaView>
+    
+		
+	
   return (
-    <View style={styles.container}>
-      <Text>Hello {user?.name}!</Text>
-		<OrderList data={formatedOrders} button="Assign!" label="Pedidos sem condutores atribuidos "></OrderList>
-	  <Button onPress={onLogout} title="Logout"></Button>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.container}>
+	  		<Text>Hello {user?.name}!</Text>
+			<OrderList data={formatOrders(order)} button="Assign!" label="Pedidos sem condutores atribuidos "refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}></OrderList>
+			<OrderList data={formatOrders(selfOrder)} label="Pedidos atribuidos a ti "></OrderList>
+			<Button onPress={onLogout} title="Logout"></Button>
+			<StatusBar style="auto" />
+			</SafeAreaView>
+	 
   );
 }
 

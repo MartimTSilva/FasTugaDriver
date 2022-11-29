@@ -1,23 +1,18 @@
 import React from "react";
-import { Button, StyleSheet, FlatList } from "react-native";
+import { Button, StyleSheet, FlatList,RefreshControl } from "react-native";
 import { Paragraph } from "react-native-paper";
 import { Text } from "react-native";
-import { db } from "../../firebase";
+import { db, ref } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //class extends FlatList from react-native
 const FlatListStyle={
-	//border color
 	borderColor: "#777",
-
-	//border width
 	borderWidth: 2,
-
 	borderRadius: 10,
 	padding: 8,
 	margin: 10,
 	flex: 1,
 	flexDirection: "column",
-	
 }
 const ParagraphCustomStyle={
 	flex: 1,
@@ -32,8 +27,10 @@ const TextCustomStyle={
 	marginTop: 20,
 	marginBottom: 10,
 }
+
+
+
 export default class OrderList extends FlatList {
-	  //constructor
   constructor(props) {
 	super(props);
 	this.state = {
@@ -51,8 +48,7 @@ export default class OrderList extends FlatList {
 	//console.log(this.props);
 	return (
 	  <Text style={TextCustomStyle}>{this.props.label}
-	  
-	  <Text>Legenda:■ = Pedido em andamento,▤ = Pedido finalizado</Text>
+	  <Text>Legenda:○ = Pedido em andamento,◉ = Pedido finalizado</Text>
 	  <FlatList
 		data={this.props.data}
 		style={FlatListStyle}
@@ -67,14 +63,21 @@ export default class OrderList extends FlatList {
 						//change assigned_order on firebase to this.props.user
 						db.collection("orders").doc(item.key).update({
 							assigned_driver: this.state.user,
-						})
-					} title={this.props.button}></Button>
+						})/*TODO: update list too without.then(() => {
+							ref.once('value')
+    
+
+						}).then(() => {
+							snapshot => snapshot.val()})
+
+						*/}title={this.props.button}></Button>
 				}
 				</Paragraph>
 			)
 		}
 		keyExtractor={(item) => item.key}
 		ListEmptyComponent={<Text>Não existem encomendas sem condutores atribuidos</Text>}
+		
 	  />
 	  </Text>
 	);
