@@ -18,41 +18,47 @@ export default function Dashboard({ navigation }) {
   //fetch orders from firebase
   const [refreshing, setRefreshing] = React.useState(false);
   //on drag down refresh page
-  useEffect(() => {
-    try {
-      AsyncStorage.getItem("@userData").then((data) => {
-        db.collection("users")
-          .doc(JSON.parse(data).id)
-          .get()
-          .then((snapshot) => {
-            if (snapshot.exists) {
-              setUser(snapshot.data());
-            }
-			
-			db.collection("orders").where("assigned_driver", "==", snapshot.id).get().then((querySnapshot) => {
-				setSelfOrder(querySnapshot.docs.map((doc)=>
-					//return doc.data(); with doc.id
-					{ return {key: doc.id, ...doc.data()}; }
-				))
-			})
-          });
-      });
-    } catch (error) {}
-  }, []);
-  //use effect to fetcjh orders that have assigned_dreiver = ""
-  useEffect(() => {
-	db.collection("orders").where("assigned_driver", "==", "").get().then((querySnapshot) => {
+  function fetchPrivateInfo() {
+	try {
+		AsyncStorage.getItem("@userData").then((data) => {
+		  db.collection("users")
+			.doc(JSON.parse(data).id)
+			.get()
+			.then((snapshot) => {
+			  if (snapshot.exists) {
+				setUser(snapshot.data());
+			  }
+			  
+			  db.collection("orders").where("assigned_driver", "==", snapshot.id).get().then((querySnapshot) => {
+				  setSelfOrder(querySnapshot.docs.map((doc)=>
+					  //return doc.data(); with doc.id
+					  { return {key: doc.id, ...doc.data()}; }
+				  ))
+			  })
+			});
+		});
+	  } catch (error) {}
 	
-		setOrder(querySnapshot.docs.map((doc)=>
-			//return doc.data(); with doc.id
-			{ return {key: doc.id, ...doc.data()}; }
-		
+	}
+	function fetchUnassignedOrders() {
+		db.collection("orders").where("assigned_driver", "==", "").get().then((querySnapshot) => {
+	
+			setOrder(querySnapshot.docs.map((doc)=>
+				//return doc.data(); with doc.id
+				{ return {key: doc.id, ...doc.data()}; }
+			))
+	
+		});
+	}
+	function refresh() {
+		fetchPrivateInfo();
+		fetchUnassignedOrders();
+	}
+  useEffect(() => {
+  	refresh();
+}, []);
+  //use effect to fetcjh orders that have assigned_dreiver = ""
 
-		))
-
-	});
-  }, []);
- 
   const onLogout = () => {
     AsyncStorage.removeItem("@userData");
     navigation.replace("Login");
@@ -126,8 +132,8 @@ export default function Dashboard({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
 	  		<Text>Hello {user?.name}!</Text>
-			<OrderList data={formatOrders(order)} button="Assign!" label="Pedidos sem condutores atribuidos "refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}></OrderList>
-			<OrderList data={formatOrders(selfOrder)} label="Pedidos atribuidos a ti "></OrderList>
+			<OrderList data={formatOrders(order)} button="Assign!" label="Pedidos sem condutores atribuidos" updateCallback={refresh}></OrderList>
+			<OrderList data={formatOrders(selfOrder)} label="Pedidos atribuidos a ti" updateCallback={refresh}></OrderList>
 			<Button onPress={onLogout} title="Logout"></Button>
 			<StatusBar style="auto" />
 			</SafeAreaView>

@@ -63,6 +63,9 @@ export default class OrderList extends FlatList {
 						//change assigned_order on firebase to this.props.user
 						db.collection("orders").doc(item.key).update({
 							assigned_driver: this.state.user,
+						}).then(()=>{
+							//run callback in props
+							this.props.updateCallback()
 						})/*TODO: update list too without.then(() => {
 							ref.once('value')
     
