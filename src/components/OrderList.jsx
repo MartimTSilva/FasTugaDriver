@@ -48,7 +48,7 @@ export default class OrderList extends FlatList {
 	//console.log(this.props);
 	return (
 	  <Text style={TextCustomStyle}>{this.props.label}
-	  <Text>Legenda:○ = Pedido em andamento,◉ = Pedido finalizado</Text>
+	  <Text>Legenda:◉- A preparar,○- Pronto para pickup,■- A entregar,□- Entregue ao cliente,△- Problema na entrega</Text>
 	  <FlatList
 		data={this.props.data}
 		style={FlatListStyle}

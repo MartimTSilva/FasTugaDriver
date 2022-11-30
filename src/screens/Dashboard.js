@@ -95,20 +95,27 @@ export default function Dashboard({ navigation }) {
 	function formatOrders(orderList){
 		function replaceWithIcons(p){
 			switch (p) {
-				case 1:
+				case 5:
+					return "△";
+				case 4:
+					return "□";
+
+				case 3:
+					return "■";
+				
+				case 2:
 					return "○";
-					break;
-			
+					
 				default:
 					return "◉";
-					break;
 			}
 		}
 		return orderList.map((item)=>{
 			return {
 			key: item.key,
 			status: replaceWithIcons(item.status),
-			distance: getDistance(item.delivery_coords.latitude, item.delivery_coords.longitude, 13.75398, 100.50144),
+			//distance to fastuga restaurant
+			distance: getDistance(item.delivery_coords.latitude, item.delivery_coords.longitude,39.73447231382876, -8.821027283140435),
 			}
 		})
 	}
