@@ -1,11 +1,14 @@
 import React from "react";
 import { View } from "react-native";
-import { Divider, IconButton, List, Text } from "react-native-paper";
+import { Button, Divider, IconButton, List, Text } from "react-native-paper";
 import {
   DELIVERED,
+  DELIVERING,
   DELIVERY_PROBLEM,
   formatOrders,
   getOrderStatusText,
+  PREPARING,
+  READY_PICK_UP,
   updateOrderAPI,
 } from "../stores/oders";
 import { theme } from "../core/theme";
@@ -27,42 +30,70 @@ export default class OrderList extends React.Component {
               <Divider />
               <List.Item
                 key={index}
-                style={{ marginRight: -20 }}
+                style={{ marginRight: -20, marginLeft: -14 }}
                 title={order.customer.slice(0, 16)}
-                description={`${getOrderStatusText(order.status)} - ${
+                descriptionStyle={{ fontWeight: "bold" }}
+                description={`${getOrderStatusText(order.status)} • ${
                   Math.round(order.distance * 10) / 10
                 } km`}
                 right={() =>
                   order.assigned ? (
-                    <View style={{ flexDirection: "row" }}>
-                      <IconButton
-                        icon="close"
-                        size={22}
+                    order.status == PREPARING ? (
+                      <Button
                         mode="contained"
-                        containerColor="red"
-                        iconColor="white"
-                        onPress={() =>
-                          this.updateOrder(order, DELIVERY_PROBLEM)
-                        }
-                      />
-                      <IconButton
-                        icon="check"
-                        size={22}
+                        buttonColor="grey"
+                        disabled={true}
+                        labelStyle={{
+                          marginLeft: 15,
+                          marginRight: 15,
+                          color: "#373837",
+                        }}
+                      >
+                        Waiting..
+                      </Button>
+                    ) : order.status == DELIVERING ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <IconButton
+                          icon="close"
+                          size={23}
+                          mode="contained"
+                          containerColor="red"
+                          iconColor="white"
+                          onPress={() =>
+                            this.updateOrder(order, DELIVERY_PROBLEM)
+                          }
+                        />
+                        <IconButton
+                          icon="check"
+                          size={23}
+                          mode="contained"
+                          containerColor="green"
+                          iconColor="white"
+                          onPress={() => this.updateOrder(order, DELIVERED)}
+                        />
+                      </View>
+                    ) : (
+                      <Button
                         mode="contained"
-                        containerColor="green"
-                        iconColor="white"
-                        onPress={() => this.updateOrder(order, DELIVERED)}
-                      />
-                    </View>
+                        buttonColor={theme.colors.secondary}
+                        onPress={() => this.updateOrder(order, DELIVERING)}
+                        labelStyle={{
+                          marginLeft: 15,
+                          marginRight: 15,
+                        }}
+                      >
+                        Picked up
+                      </Button>
+                    )
                   ) : (
-                    <IconButton
-                      icon="upload"
-                      size={22}
+                    <Button
+                      icon="clipboard-arrow-down"
                       mode="contained"
-                      containerColor={theme.colors.primary}
-                      iconColor="white"
+                      buttonColor={theme.colors.primary}
                       onPress={() => this.updateOrder(order)}
-                    />
+                    >
+                      Assign!
+                    </Button>
                   )
                 }
               />
