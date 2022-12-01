@@ -1,25 +1,41 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "../../firebase";
 import { getDistance } from "../utils/locationUtil";
+import { query, where, collection, getDocs } from "firebase/firestore";
 
+export const PREPARING = 1;
+export const READY_PICK_UP = 2;
+export const DELIVERING = 3;
 export const DELIVERED = 4;
 export const DELIVERY_PROBLEM = 5;
 
 export async function updateOrderAPI(order, newStatus) {
   const userID = JSON.parse(await AsyncStorage.getItem("@userData")).id;
+  const updateObj = newStatus
+    ? { assigned_driver: userID, status: newStatus }
+    : { assigned_driver: userID };
 
-  return await db
-    .collection("orders")
-    .doc(order.key)
-    .update({ assigned_driver: userID, status: newStatus });
+  return await db.collection("orders").doc(order.key).update(updateObj);
 }
 
 export async function fetchUnassignedOrdersAPI() {
-  return await db.collection("orders").where("assigned_driver", "==", "").get();
+  const unssOrdersQuery = query(
+    collection(db, "orders"),
+    where("assigned_driver", "==", ""),
+    where("status", "<", 4)
+  );
+
+  return await getDocs(unssOrdersQuery);
 }
 
 export async function fetchDriverOrdersAPI(id) {
-  return await db.collection("orders").where("assigned_driver", "==", id).get();
+  const driverOrderQuery = query(
+    collection(db, "orders"),
+    where("assigned_driver", "==", id),
+    where("status", "<", 4)
+  );
+
+  return await getDocs(driverOrderQuery);
 }
 
 export function getOrderStatusText(status) {
@@ -34,7 +50,7 @@ export function getOrderStatusText(status) {
       return "Delivering";
 
     case 2:
-      return "Ready for Pick-up";
+      return "Ready for pick-up";
 
     default:
       return "Preparing";
