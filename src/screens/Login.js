@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
-
+import { Text } from "react-native-paper";
 import Background from "../components/Background";
 import Logo from "../components/Logo";
 import Button from "../components/Button";

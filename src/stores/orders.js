@@ -64,6 +64,8 @@ export function formatOrders(orderList) {
       status: item.status,
       customer: item.customer,
       assigned: !!item.assigned_driver,
+      price: item.price,
+      number_items: item.number_items,
       //distance to fastuga restaurant
       distance: getDistance(
         item.delivery_coords.latitude,

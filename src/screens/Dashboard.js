@@ -4,13 +4,13 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
 import { Card, Divider, ProgressBar } from "react-native-paper";
-import { SafeAreaView, StyleSheet, Text, Button, View } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { db } from "../../firebase";
+import { theme } from "../core/theme";
 import {
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
-} from "../stores/oders";
-import { theme } from "../core/theme";
+} from "../stores/orders";
 
 export default function Dashboard({ navigation }) {
   const [user, setUser] = useState(null);
@@ -60,6 +60,10 @@ export default function Dashboard({ navigation }) {
     await getUnassignedOrders();
   }
 
+  function viewOrderDetails(order) {
+    navigation.navigate("OrderDetails", order);
+  }
+
   useEffect(() => {
     refresh();
   }, []);
@@ -82,7 +86,11 @@ export default function Dashboard({ navigation }) {
           <Divider />
         )}
         <Card.Content>
-          <OrderList data={order} updateCallback={refresh}></OrderList>
+          <OrderList
+            data={order}
+            updateCallback={refresh}
+            onPressOrder={viewOrderDetails}
+          ></OrderList>
         </Card.Content>
       </Card>
       <Card style={styles.card}>
@@ -93,7 +101,11 @@ export default function Dashboard({ navigation }) {
           <Divider />
         )}
         <Card.Content>
-          <OrderList data={selfOrder} updateCallback={refresh}></OrderList>
+          <OrderList
+            data={selfOrder}
+            updateCallback={refresh}
+            onPressOrder={viewOrderDetails}
+          ></OrderList>
         </Card.Content>
       </Card>
     </SafeAreaView>
