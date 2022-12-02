@@ -4,6 +4,7 @@ import { theme } from "../core/theme";
 import { getOrderStatusText } from "../stores/orders";
 import { db } from "../../firebase";
 import { useEffect, useState } from "react";
+import Maps from "../components/Maps";
 
 export default function OrderDetails({ route, navigation }) {
   const [customer, setCustomer] = useState({});
@@ -47,20 +48,8 @@ export default function OrderDetails({ route, navigation }) {
             <Text style={styles.cardText}>{route.params.price}€</Text>
           </View>
         </View>
-
-        <Divider style={{ marginTop: 17 }} />
-
-        <Text style={styles.cardTitle}>Customer Name</Text>
-        <Text style={styles.cardText}>
-          {customer ? customer.name : "Loading.."}
-        </Text>
-
-        <Text style={styles.cardTitle}>Customer Address</Text>
-        <Text style={styles.cardText}>
-          {customer ? customer.address : "Loading.."}
-        </Text>
       </Card>
-      <Card style={styles.card}></Card>
+      <Maps coords={route.params.coords} customer={customer} />
     </View>
   );
 }
@@ -68,7 +57,7 @@ export default function OrderDetails({ route, navigation }) {
 const styles = StyleSheet.create({
   card: {
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingBottom: 16,
     marginHorizontal: 20,
     marginTop: 14,
   },

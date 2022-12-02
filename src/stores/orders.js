@@ -73,6 +73,10 @@ export function formatOrders(orderList) {
         39.73447231382876,
         -8.821027283140435
       ),
+      coords: {
+        lat: item.delivery_coords.latitude,
+        long: item.delivery_coords.longitude,
+      },
     };
   });
 }

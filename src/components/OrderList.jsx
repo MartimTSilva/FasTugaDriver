@@ -2,7 +2,6 @@ import React from "react";
 import { View } from "react-native";
 import { Button, Divider, IconButton, List, Text } from "react-native-paper";
 import { theme } from "../core/theme";
-import { useNavigation } from "@react-navigation/native";
 
 import {
   PREPARING,
