@@ -18,3 +18,16 @@ export function getDistance(lat1, lon1, lat2, lon2) {
 const deg2rad = (deg) => {
   return deg * (Math.PI / 180);
 };
+
+export function getCoordsDistanceFromRestaurant(coords) {
+  return (
+    Math.round(
+      getDistance(
+        coords.latitude,
+        coords.longitude,
+        39.73447231382876,
+        -8.821027283140435
+      ) * 10
+    ) / 10
+  );
+}

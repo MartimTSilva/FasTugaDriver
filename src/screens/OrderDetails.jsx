@@ -1,5 +1,5 @@
-import { View, StyleSheet } from "react-native";
-import { Card, Divider, Text } from "react-native-paper";
+import { View, StyleSheet, ScrollView } from "react-native";
+import { Card, Text } from "react-native-paper";
 import { theme } from "../core/theme";
 import { getOrderStatusText } from "../stores/orders";
 import { db } from "../../firebase";
@@ -8,7 +8,6 @@ import Maps from "../components/Maps";
 
 export default function OrderDetails({ route, navigation }) {
   const [customer, setCustomer] = useState({});
-  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchCustomerData();
@@ -25,7 +24,7 @@ export default function OrderDetails({ route, navigation }) {
   }
 
   return (
-    <View>
+    <ScrollView>
       <Card style={styles.card}>
         <Text style={styles.cardTitle}>Order ID</Text>
         <Text style={styles.cardText}>{route.params.key}</Text>
@@ -49,8 +48,8 @@ export default function OrderDetails({ route, navigation }) {
           </View>
         </View>
       </Card>
-      <Maps coords={route.params.coords} customer={customer} />
-    </View>
+      <Maps order={route.params} customer={customer} />
+    </ScrollView>
   );
 }
 

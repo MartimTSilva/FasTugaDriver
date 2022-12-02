@@ -35,7 +35,7 @@ export default function App() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
-            <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
+            <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} options={{title: "Order Details"}}/>
           </Stack.Navigator>
         </NavigationContainer>
       </ToastProvider>

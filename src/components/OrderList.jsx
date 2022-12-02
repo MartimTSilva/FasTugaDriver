@@ -39,7 +39,7 @@ export default class OrderList extends React.Component {
                 descriptionStyle={{ fontWeight: "bold" }}
                 onPress={() => this.pressOrderItem(order)}
                 description={`${getOrderStatusText(order.status)} • ${
-                  Math.round(order.distance * 10) / 10
+                  order.distance
                 } km`}
                 right={() =>
                   order.assigned ? (
