@@ -104,7 +104,7 @@ export default function LoginScreen({ navigation }) {
 		  () => {
 			setStayLogged(!stayLogged);
 		  }
-	  }></Checkbox><Text>Stay logged in</Text>
+	  }></Checkbox><Text style={styles.textCenter}>Stay logged in</Text>
 	  </View>
       <View style={styles.row}>
         <Text>Don’t have an account? </Text>
@@ -123,6 +123,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 50,
   },
+  textCenter: {
+	textAlign: "center",
+	marginBottom: 8, 
+	marginTop: 8 
+  },
+  
 
   link: {
     fontWeight: "bold",
