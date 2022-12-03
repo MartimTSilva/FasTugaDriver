@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { Checkbox, ActivityIndicator, Text } from "react-native-paper";
 
 import Background from "../components/Background";
 import Logo from "../components/Logo";
@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../components/Loading";
 
 export default function LoginScreen({ navigation }) {
+  var [stayLogged, setStayLogged]= useState(false);
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
   const [isLoading, setLoading] = useState(false);
@@ -46,11 +47,17 @@ export default function LoginScreen({ navigation }) {
     auth()
       .signInWithEmailAndPassword(email.value, password.value)
       .then((userData) => {
-        AsyncStorage.setItem(
-          "@userData",
-          JSON.stringify({ id: userData.user.uid, email: userData.user.email })
-        );
-        navigation.replace("Dashboard");
+		if (stayLogged) {
+			AsyncStorage.setItem(
+			"@userData",
+			JSON.stringify({ id: userData.user.uid, email: userData.user.email })
+			);
+			navigation.replace("Dashboard");
+		}else{
+			//go to dashboard but send { id: userData.user.uid, email: userData.user.email }
+			navigation.replace("Dashboard", { id: userData.user.uid, email: userData.user.email });
+		}
+        
       })
       .catch((error) => {
         setLoading(false);
@@ -92,6 +99,13 @@ export default function LoginScreen({ navigation }) {
       <Button mode="contained" onPress={onLoginPressed} disabled={isLoading}>
         Login
       </Button>
+	  <View style={styles.row}>
+	  <Checkbox status={stayLogged ? 'checked': 'unchecked'} onPress={
+		  () => {
+			setStayLogged(!stayLogged);
+		  }
+	  }></Checkbox><Text>Stay logged in</Text>
+	  </View>
       <View style={styles.row}>
         <Text>Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("Register")}>

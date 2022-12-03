@@ -21,8 +21,15 @@ export default function Dashboard({ navigation }) {
   //on drag down refresh page
   async function fetchPrivateInfo() {
     try {
-      const userID = JSON.parse(await AsyncStorage.getItem("@userData")).id;
-
+	  const userID=0;
+	  //if user params were sent from login screen fetch them from there
+	  if (navigation.state.params) {
+		userID = navigation.state.params.id;
+	  }else{
+		//else fetch them from async storage
+		userID = JSON.parse(await AsyncStorage.getItem("@userData")).id;
+	  }
+      
       await db
         .collection("users")
         .doc(userID)
