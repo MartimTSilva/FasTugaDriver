@@ -9,8 +9,7 @@ export const DELIVERING = 3;
 export const DELIVERED = 4;
 export const DELIVERY_PROBLEM = 5;
 
-export async function updateOrderAPI(order, newStatus) {
-  const userID = JSON.parse(await AsyncStorage.getItem("@userData")).id;
+export async function updateOrderAPI(order, newStatus, userID) {
   const updateObj = newStatus
     ? { assigned_driver: userID, status: newStatus }
     : { assigned_driver: userID };

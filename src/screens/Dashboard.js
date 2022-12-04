@@ -9,10 +9,10 @@ import { db } from "../../firebase";
 import {
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
-} from "../stores/oders";
+} from "../stores/orders";
 import { theme } from "../core/theme";
 
-export default function Dashboard({ navigation }) {
+export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
@@ -21,25 +21,21 @@ export default function Dashboard({ navigation }) {
   //on drag down refresh page
   async function fetchPrivateInfo() {
     try {
-	  const userID=0;
-	  //if user params were sent from login screen fetch them from there
-	  if (navigation.state.params) {
-		userID = navigation.state.params.id;
-	  }else{
-		//else fetch them from async storage
-		userID = JSON.parse(await AsyncStorage.getItem("@userData")).id;
-	  }
-      
+      let userID;
+      await AsyncStorage.getItem("@userData").then((res) => {
+        userID = res ? JSON.parse(res).id : route.params.id;
+        setUser(JSON.parse(res));
+      });
+
       await db
         .collection("users")
         .doc(userID)
         .get()
-        .then((snapshot) => {
+        .then(async (snapshot) => {
           if (snapshot.exists) {
-            setUser(snapshot.data());
+            setUser({...snapshot.data(), id: userID});
           }
-
-          fetchDriverOrdersAPI(snapshot.id).then((orders) => {
+          await fetchDriverOrdersAPI(snapshot.id).then((orders) => {
             setSelfOrder(
               orders.docs.map((doc) => {
                 return { key: doc.id, ...doc.data() };
@@ -47,7 +43,11 @@ export default function Dashboard({ navigation }) {
             );
           });
         });
-    } catch (error) {}
+
+      await getAssignedOrders(userID ? userID : route.params.id);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function getUnassignedOrders() {
@@ -60,6 +60,16 @@ export default function Dashboard({ navigation }) {
         );
       })
       .finally(() => setLoading(false));
+  }
+
+  async function getAssignedOrders(id) {
+    await fetchDriverOrdersAPI(id).then((orders) => {
+      setSelfOrder(
+        orders.docs.map((doc) => {
+          return { key: doc.id, ...doc.data() };
+        })
+      );
+    });
   }
 
   async function refresh() {
@@ -82,7 +92,7 @@ export default function Dashboard({ navigation }) {
           <Divider />
         )}
         <Card.Content>
-          <OrderList data={order} updateCallback={refresh}></OrderList>
+          <OrderList user={user} data={order} updateCallback={refresh}></OrderList>
         </Card.Content>
       </Card>
       <Card style={styles.card}>
@@ -93,7 +103,7 @@ export default function Dashboard({ navigation }) {
           <Divider />
         )}
         <Card.Content>
-          <OrderList data={selfOrder} updateCallback={refresh}></OrderList>
+          <OrderList user={user} data={selfOrder} updateCallback={refresh}></OrderList>
         </Card.Content>
       </Card>
     </SafeAreaView>

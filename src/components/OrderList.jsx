@@ -10,12 +10,13 @@ import {
   PREPARING,
   READY_PICK_UP,
   updateOrderAPI,
-} from "../stores/oders";
+} from "../stores/orders";
 import { theme } from "../core/theme";
 
 export default class OrderList extends React.Component {
   async updateOrder(order, newStatus) {
-    await updateOrderAPI(order, newStatus).finally(() =>
+    console.log("TESTE: ", this.props.user)
+    await updateOrderAPI(order, newStatus, this.props.user.id).finally(() =>
       this.props.updateCallback()
     );
   }
