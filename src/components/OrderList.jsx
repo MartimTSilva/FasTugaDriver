@@ -14,14 +14,15 @@ import {
 import { theme } from "../core/theme";
 
 export default class OrderList extends React.Component {
-  async updateOrder(order, newStatus) {
-    await updateOrderAPI(order, newStatus, this.props.user.id, "").finally(() =>
-      this.props.updateCallback()
-    );
+  async updateOrder(order, newStatus, user) {
+    await updateOrderAPI(order, newStatus, user, "").finally(() => {
+      this.props.updateCallback();
+    });
   }
 
   render() {
     const orders = formatOrders(this.props.data);
+    const user = this.props.user;
     return (
       <View>
         {orders.length > 0 ? (
@@ -67,14 +68,18 @@ export default class OrderList extends React.Component {
                           mode="contained"
                           containerColor="green"
                           iconColor="white"
-                          onPress={() => this.updateOrder(order, DELIVERED)}
+                          onPress={() =>
+                            this.updateOrder(order, DELIVERED, user)
+                          }
                         />
                       </View>
                     ) : (
                       <Button
                         mode="contained"
                         buttonColor={theme.colors.secondary}
-                        onPress={() => this.updateOrder(order, DELIVERING)}
+                        onPress={() =>
+                          this.updateOrder(order, DELIVERING, user)
+                        }
                         labelStyle={{
                           marginLeft: 15,
                           marginRight: 15,
@@ -88,7 +93,7 @@ export default class OrderList extends React.Component {
                       icon="clipboard-arrow-down"
                       mode="contained"
                       buttonColor={theme.colors.primary}
-                      onPress={() => this.updateOrder(order)}
+                      onPress={() => this.updateOrder(order, "", user)}
                     >
                       Assign!
                     </Button>

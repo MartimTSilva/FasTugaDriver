@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "../../firebase";
 import { getDistance } from "../utils/locationUtil";
 import { query, where, collection, getDocs } from "firebase/firestore";
@@ -9,10 +8,19 @@ export const DELIVERING = 3;
 export const DELIVERED = 4;
 export const DELIVERY_PROBLEM = 5;
 
-export async function updateOrderAPI(order, newStatus, userID, justification) {
+export async function updateOrderAPI(order, newStatus, user, justification) {
+  if (newStatus == DELIVERED) {
+    user.balance = user.balance + calculateOrderEarnings(order.distance);
+    await db.collection("users").doc(user.id).update(user);
+  }
+
   const updateObj = newStatus
-    ? { assigned_driver: userID, status: newStatus, cancel_justification: justification}
-    : { assigned_driver: userID };
+    ? {
+        assigned_driver: user.id,
+        status: newStatus,
+        cancel_justification: justification,
+      }
+    : { assigned_driver: user.id };
 
   return await db.collection("orders").doc(order.key).update(updateObj);
 }
@@ -72,4 +80,15 @@ export function formatOrders(orderList) {
       ),
     };
   });
+}
+
+function calculateOrderEarnings(distance) {
+  //Drivers earn fixed fees: 2€ per routes up until 3 km; 3€ per routes up until 10 km; and, 4€ for routes of greater length.
+  if (distance <= 3.0) {
+    return 2;
+  } else if (distance <= 10.0) {
+    return 3;
+  } else {
+    return 4;
+  }
 }

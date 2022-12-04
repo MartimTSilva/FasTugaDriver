@@ -11,8 +11,11 @@ import {
   Dialog,
   Portal,
   Provider,
+  Text,
+  Avatar,
+  IconButton,
 } from "react-native-paper";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { db } from "../../firebase";
 import {
   DELIVERY_PROBLEM,
@@ -22,6 +25,7 @@ import {
 } from "../stores/orders";
 import { theme } from "../core/theme";
 import TextInput from "../components/TextInput";
+import { alignSelf, paddingRight } from "styled-system";
 
 export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
@@ -90,13 +94,18 @@ export default function Dashboard({ route, navigation }) {
   }
 
   async function cancelOrder() {
-    await updateOrderAPI(orderBeingCancelled, DELIVERY_PROBLEM, user.id, justification)
+    await updateOrderAPI(
+      orderBeingCancelled,
+      DELIVERY_PROBLEM,
+      user,
+      justification
+    )
       .catch((error) => console.log(error))
       .finally(() => {
         hideDialog();
         setJustification("");
-        setOrderBeingCancelled(null)
-        refresh()
+        setOrderBeingCancelled(null);
+        refresh();
       });
   }
 
@@ -104,6 +113,11 @@ export default function Dashboard({ route, navigation }) {
     setOrderBeingCancelled(order);
     showDialog();
   }
+
+  const logout = (navigation) => {
+    AsyncStorage.removeItem("@userData");
+    navigation.replace("Login");
+  };
 
   async function refresh() {
     await fetchPrivateInfo();
@@ -116,7 +130,59 @@ export default function Dashboard({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="inverted" />
+      <View style={styles.dashboard} />
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 64,
+          justifyContent: "space-between",
+          width: "100%",
+          paddingLeft: 22,
+          paddingRight: 8
+        }}
+      >
+        <Text style={styles.helloText}>{`Hello, ${
+          user && user.name ? user.name : "... "
+        }! 👋`}</Text>
+        <IconButton
+          icon="logout-variant"
+          size={22}
+          iconColor="white"
+          onPress={() => logout(navigation)}
+        />
+      </View>
+      <View style={styles.cardRow}>
+        <Card style={{ ...styles.card, width: "45%" }}>
+          <Card.Title
+            titleStyle={{ ...styles.cardTitle }}
+            title="Balance  💸"
+          />
+          <Card.Content style={{ paddingTop: 6, marginBottom: -6 }}>
+            <Text
+              style={{
+                color: theme.colors.primary,
+                fontWeight: "bold",
+                fontSize: 22,
+              }}
+            >{`${user && user.balance ? user.balance : "..."}€`}</Text>
+          </Card.Content>
+        </Card>
+        <Card
+          style={{ ...styles.card, width: "45%" }}
+          onPress={() => console.log("ssss")}
+        >
+          <Card.Title
+            titleStyle={{ ...styles.cardTitle }}
+            title="Statistics  📊"
+          />
+          <Card.Content style={{ marginBottom: -6 }}>
+            <Text style={{ fontStyle: "italic" }}>
+              View statistics about your work!
+            </Text>
+          </Card.Content>
+        </Card>
+      </View>
       <Card style={styles.card}>
         <Card.Title title="Available Orders" titleStyle={styles.cardTitle} />
         {isLoading ? (
@@ -192,5 +258,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 19,
     paddingTop: 8,
+  },
+
+  cardRow: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-evenly",
+    paddingHorizontal: 14,
+    marginTop: -10
+  },
+
+  helloText: {
+    fontWeight: "bold",
+    fontSize: 24,
+    color: "white",
+    paddingTop: 8,
+  },
+
+  dashboard: {
+    backgroundColor: theme.colors.primary,
+    borderBottomEndRadius: 25,
+    borderBottomStartRadius: 25,
+    paddingBottom: 291.5,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
   },
 });
