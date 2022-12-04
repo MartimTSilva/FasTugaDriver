@@ -8,7 +8,7 @@ export default function Logo() {
 const styles = StyleSheet.create({
   image: {
     width: "100%",
-    height: "7%",
-    marginBottom: 16,
+    height: "7.5%",
+    marginBottom: 8,
   },
 });

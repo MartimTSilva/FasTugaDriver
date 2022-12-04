@@ -79,8 +79,6 @@ export default function Dashboard({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
-      {/* <Button onPress={onLogout} title="Logout"></Button>
-      <Text>Hello {user?.name}!</Text> */}
       <Card style={styles.card}>
         <Card.Title title="Available Orders" titleStyle={styles.cardTitle} />
         {isLoading ? (
