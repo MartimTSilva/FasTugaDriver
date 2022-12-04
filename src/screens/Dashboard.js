@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
 import { Card, Divider, ProgressBar } from "react-native-paper";
-import { SafeAreaView, StyleSheet, Text, Button, View } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { db } from "../../firebase";
 import {
   fetchDriverOrdersAPI,
@@ -70,11 +70,6 @@ export default function Dashboard({ navigation }) {
   useEffect(() => {
     refresh();
   }, []);
-
-  const onLogout = () => {
-    AsyncStorage.removeItem("@userData");
-    navigation.replace("Login");
-  };
 
   return (
     <SafeAreaView style={styles.container}>
