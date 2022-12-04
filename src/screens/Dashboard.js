@@ -3,20 +3,37 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
-import { Card, Divider, ProgressBar } from "react-native-paper";
+import {
+  Card,
+  Divider,
+  ProgressBar,
+  Button,
+  Dialog,
+  Portal,
+  Provider,
+} from "react-native-paper";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { db } from "../../firebase";
 import {
+  DELIVERY_PROBLEM,
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
+  updateOrderAPI,
 } from "../stores/orders";
 import { theme } from "../core/theme";
+import TextInput from "../components/TextInput";
 
 export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
   const [isLoading, setLoading] = useState(true);
+
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+  const hideDialog = () => setVisible(false);
+  const [justification, setJustification] = useState("");
+  const [orderBeingCancelled, setOrderBeingCancelled] = useState(null);
 
   //on drag down refresh page
   async function fetchPrivateInfo() {
@@ -33,7 +50,7 @@ export default function Dashboard({ route, navigation }) {
         .get()
         .then(async (snapshot) => {
           if (snapshot.exists) {
-            setUser({...snapshot.data(), id: userID});
+            setUser({ ...snapshot.data(), id: userID });
           }
           await fetchDriverOrdersAPI(snapshot.id).then((orders) => {
             setSelfOrder(
@@ -72,6 +89,22 @@ export default function Dashboard({ route, navigation }) {
     });
   }
 
+  async function cancelOrder() {
+    await updateOrderAPI(orderBeingCancelled, DELIVERY_PROBLEM, user.id, justification)
+      .catch((error) => console.log(error))
+      .finally(() => {
+        hideDialog();
+        setJustification("");
+        setOrderBeingCancelled(null)
+        refresh()
+      });
+  }
+
+  function showCancelationDialog(order) {
+    setOrderBeingCancelled(order);
+    showDialog();
+  }
+
   async function refresh() {
     await fetchPrivateInfo();
     await getUnassignedOrders();
@@ -92,7 +125,12 @@ export default function Dashboard({ route, navigation }) {
           <Divider />
         )}
         <Card.Content>
-          <OrderList user={user} data={order} updateCallback={refresh}></OrderList>
+          <OrderList
+            user={user}
+            data={order}
+            updateCallback={refresh}
+            cancelCallback={showCancelationDialog}
+          ></OrderList>
         </Card.Content>
       </Card>
       <Card style={styles.card}>
@@ -103,9 +141,36 @@ export default function Dashboard({ route, navigation }) {
           <Divider />
         )}
         <Card.Content>
-          <OrderList user={user} data={selfOrder} updateCallback={refresh}></OrderList>
+          <OrderList
+            user={user}
+            data={selfOrder}
+            updateCallback={refresh}
+            cancelCallback={showCancelationDialog}
+          ></OrderList>
         </Card.Content>
       </Card>
+
+      <Provider>
+        <Portal>
+          <Dialog
+            visible={visible}
+            onDismiss={hideDialog}
+            style={{ marginBottom: 200 }}
+          >
+            <Dialog.Title>Cancel Order</Dialog.Title>
+            <Dialog.Content>
+              <TextInput
+                value={justification}
+                label="Justification"
+                onChangeText={(text) => setJustification(text)}
+              ></TextInput>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={cancelOrder}>OK</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </Provider>
     </SafeAreaView>
   );
 }
@@ -114,6 +179,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
+    height: "100%",
   },
 
   card: {

@@ -15,8 +15,7 @@ import { theme } from "../core/theme";
 
 export default class OrderList extends React.Component {
   async updateOrder(order, newStatus) {
-    console.log("TESTE: ", this.props.user)
-    await updateOrderAPI(order, newStatus, this.props.user.id).finally(() =>
+    await updateOrderAPI(order, newStatus, this.props.user.id, "").finally(() =>
       this.props.updateCallback()
     );
   }
@@ -32,7 +31,7 @@ export default class OrderList extends React.Component {
               <List.Item
                 key={index}
                 style={{ marginRight: -20, marginLeft: -14 }}
-                title={order.customer.slice(0, 16)}
+                title={order.key.slice(0, 16)}
                 descriptionStyle={{ fontWeight: "bold" }}
                 description={`${getOrderStatusText(order.status)} • ${
                   Math.round(order.distance * 10) / 10
@@ -60,9 +59,7 @@ export default class OrderList extends React.Component {
                           mode="contained"
                           containerColor="red"
                           iconColor="white"
-                          onPress={() =>
-                            this.updateOrder(order, DELIVERY_PROBLEM)
-                          }
+                          onPress={() => this.props.cancelCallback(order)}
                         />
                         <IconButton
                           icon="check"

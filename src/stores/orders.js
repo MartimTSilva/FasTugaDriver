@@ -9,9 +9,9 @@ export const DELIVERING = 3;
 export const DELIVERED = 4;
 export const DELIVERY_PROBLEM = 5;
 
-export async function updateOrderAPI(order, newStatus, userID) {
+export async function updateOrderAPI(order, newStatus, userID, justification) {
   const updateObj = newStatus
-    ? { assigned_driver: userID, status: newStatus }
+    ? { assigned_driver: userID, status: newStatus, cancel_justification: justification}
     : { assigned_driver: userID };
 
   return await db.collection("orders").doc(order.key).update(updateObj);
