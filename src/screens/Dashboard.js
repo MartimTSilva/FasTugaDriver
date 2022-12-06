@@ -12,7 +12,6 @@ import {
   Portal,
   Provider,
   Text,
-  Avatar,
   IconButton,
 } from "react-native-paper";
 import { SafeAreaView, StyleSheet, View } from "react-native";
@@ -25,7 +24,6 @@ import {
 } from "../stores/orders";
 import { theme } from "../core/theme";
 import TextInput from "../components/TextInput";
-import { alignSelf, paddingRight } from "styled-system";
 
 export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
@@ -36,7 +34,7 @@ export default function Dashboard({ route, navigation }) {
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
-  const [justification, setJustification] = useState("");
+  const [justification, setJustification] = useState({ value: "", error: "" });
   const [orderBeingCancelled, setOrderBeingCancelled] = useState(null);
 
   //on drag down refresh page
@@ -94,16 +92,23 @@ export default function Dashboard({ route, navigation }) {
   }
 
   async function cancelOrder() {
+    if (!justification.value) {
+      setJustification({
+        ...justification,
+        error: "Justification can't be empty",
+      });
+    }
+
     await updateOrderAPI(
       orderBeingCancelled,
       DELIVERY_PROBLEM,
       user,
-      justification
+      justification.value
     )
       .catch((error) => console.log(error))
       .finally(() => {
         hideDialog();
-        setJustification("");
+        setJustification({});
         setOrderBeingCancelled(null);
         refresh();
       });
@@ -118,6 +123,10 @@ export default function Dashboard({ route, navigation }) {
     AsyncStorage.removeItem("@userData");
     navigation.replace("Login");
   };
+
+  function justificationHandler(enteredText) {
+    setJustification({ value: enteredText, error: "" });
+  }
 
   async function refresh() {
     await fetchPrivateInfo();
@@ -139,7 +148,7 @@ export default function Dashboard({ route, navigation }) {
           justifyContent: "space-between",
           width: "100%",
           paddingLeft: 22,
-          paddingRight: 8
+          paddingRight: 8,
         }}
       >
         <Text style={styles.helloText}>{`Hello, ${
@@ -222,17 +231,22 @@ export default function Dashboard({ route, navigation }) {
             visible={visible}
             onDismiss={hideDialog}
             style={{ marginBottom: 200 }}
+            theme={theme}
           >
             <Dialog.Title>Cancel Order</Dialog.Title>
             <Dialog.Content>
               <TextInput
                 value={justification}
                 label="Justification"
-                onChangeText={(text) => setJustification(text)}
+                onChangeText={justificationHandler}
+                error={justification.error}
+                errorText={justification.error}
               ></TextInput>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button onPress={cancelOrder}>OK</Button>
+              <Button onPress={cancelOrder} textColor={theme.colors.primary}>
+                OK
+              </Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>
@@ -265,7 +279,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-evenly",
     paddingHorizontal: 14,
-    marginTop: -10
+    marginTop: -10,
   },
 
   helloText: {
