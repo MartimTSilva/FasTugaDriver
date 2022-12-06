@@ -7,6 +7,7 @@ import { Card, Divider, ProgressBar } from "react-native-paper";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
+import * as Location from "expo-location";
 import {
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
@@ -17,6 +18,7 @@ export default function Dashboard({ navigation }) {
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const [location, setLocation] = useState(null);
 
   //on drag down refresh page
   async function fetchPrivateInfo() {
@@ -54,14 +56,34 @@ export default function Dashboard({ navigation }) {
       })
       .finally(() => setLoading(false));
   }
+ //This fixes the Absolute Sº!º that is Javascript
+ 
+	 async function getLocation() {
+		let { status } = await Location.requestForegroundPermissionsAsync();
+		if (status !== "granted") {
+		  setErrorMsg("Permission to access location was denied");
+		  return;
+		}
+  
+		let location = await Location.getCurrentPositionAsync({});
+		
+		setLocation(location);
 
+		
+	
+  	}
+
+
+  //end of Sº!º fixing code
   async function refresh() {
     await fetchPrivateInfo();
     await getUnassignedOrders();
+	await getLocation();
   }
 
   function viewOrderDetails(order) {
-    navigation.navigate("OrderDetails", order);
+	// yep you've seen it first hand its the only way to deal with this Piece OF S*!º environment
+    navigation.navigate("OrderDetails", {...order, MEMElatitude: location.coords.latitude, MEMElongitude: location.coords.longitude});
   }
 
   useEffect(() => {

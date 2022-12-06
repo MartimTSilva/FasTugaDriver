@@ -2,43 +2,29 @@ import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import React from "react";
-import * as Location from "expo-location";
+
 import { Card, Divider, Text } from "react-native-paper";
 import { theme } from "../core/theme";
 
 export default class Maps extends React.Component {
   constructor(props) {
 	super(props);
-
+	console.log(props)
 	this.state = {
-		currentLocation: {},
+		currentLocation: { latitude: props.order.MEMElatitude, longitude: props.order.MEMElongitude},
 		fastugaLocation: { latitude: 39.73447231382876, longitude: -8.821027283140435},
-		deliveryLocation: { latitude: props.order.coords.lat, longitude: props.order.coords.long},
-		get markers() {
-			return [{coordinate: this.fastugaLocation, title:"Fastuga restaurant"}, {coordinate: this.deliveryLocation, title:"Delivery location"}]}
+		deliveryLocation: { latitude: props.order.coords.lat, longitude: props.order.coords.long}
 	};
-}
-  
-
-componentDidMount () {
-   ( async () => {
-		let { status } = await Location.requestForegroundPermissionsAsync();
-		if (status !== "granted") {
-		  setErrorMsg("Permission to access location was denied");
-		  return;
-		}
-  
-		let location = await Location.getCurrentPositionAsync({});
-		
-		this.state.currentLocation = location.coords;
-		//this.state.markers.push = {coordinate: this.state.currentLocation, title:"Current location"};
-		this.state.markers.push({coordinate: this.state.currentLocation, title:"Current location"});
-  	})();
-	  
 }
   render() {
 	
+	let defMarkers= [{coordinate: this.fastugaLocation, title:"Fastuga restaurant"}, {coordinate: this.deliveryLocation, title:"Delivery location"}];
+
+	if(this.currentLocation) {
+		defMarkers= [...defMarkers, {coordinate: this.currentLocation, title:"Current location"}];
 	
+	}
+
     const order = this.props.order;
     const customer = this.props.customer;
     const GOOGLE_MAPS_APIKEY = "AIzaSyBDg9iVKHgE7xKL-JTH-Z6p8b5zs1cbGDc";
@@ -88,15 +74,21 @@ componentDidMount () {
               longitudeDelta: 0.05,
             }}
           >
-			{this.state.markers.map((marker, index) => (
-				
+			
 				 <Marker
-				   key={index}
-				   coordinate={marker.coordinate}
-				   title={marker.title}
+				   coordinate={this.state.fastugaLocation}
+				   title={"Fastuga restaurant"}
 				/>
-				
-			))}
+				<Marker
+				   coordinate={this.state.deliveryLocation}
+				   title={"Delivery location"}
+				/>
+				<Marker
+				   coordinate={this.state.currentLocation}
+				   image={{uri: 'thumbLocation'}}
+				   title={"Current location"}
+				/>
+
             <MapViewDirections
               origin={this.state.fastugaLocation}
               destination={this.state.deliveryLocation}

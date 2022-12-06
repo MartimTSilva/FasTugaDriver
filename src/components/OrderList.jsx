@@ -14,6 +14,8 @@ import {
 } from "../stores/orders";
 
 export default class OrderList extends React.Component {
+
+
   async updateOrder(order, newStatus) {
     await updateOrderAPI(order, newStatus).finally(() =>
       this.props.updateCallback()
