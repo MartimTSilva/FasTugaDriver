@@ -8,7 +8,6 @@ import RegisterScreen from "./src/screens/Register";
 import { ThemeProvider } from "styled-components";
 import { ToastProvider } from "react-native-styled-toast";
 import { theme } from "./src/core/theme";
-import { IconButton } from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,11 +26,6 @@ export default function App() {
 
   if (initScreen === null) return;
 
-  const logout = (navigation) => {
-    AsyncStorage.removeItem("@userData");
-    navigation.replace("Login");
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <ToastProvider offset={100} maxToasts={1}>
@@ -42,15 +36,7 @@ export default function App() {
             <Stack.Screen
               name="Dashboard"
               component={DashboardScreen}
-              options={({ navigation }) => ({
-                headerRight: () => (
-                  <IconButton
-                    icon="logout-variant"
-                    size={22}
-                    onPress={() => logout(navigation)}
-                  />
-                ),
-              })}
+              options={{ headerShown: false }}
             />
           </Stack.Navigator>
         </NavigationContainer>
