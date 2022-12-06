@@ -2,11 +2,27 @@ import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import React from "react";
+import Geolocation from "react-native-geolocation-service";
 import { Card, Divider, Text } from "react-native-paper";
 import { theme } from "../core/theme";
 
 export default class Maps extends React.Component {
+  
   render() {
+	const location = { latitude: 0, longitude: 0 };
+	Geolocation.getCurrentPosition(
+		position => {
+			location.latitude = position.coords.latitude;
+			location.longitude = position.coords.longitude;
+			
+		},{
+			showLocationDialog: true,
+			enableHighAccuracy: true,
+			timeout: 20000,
+			maximumAge: 0
+
+		}
+	);
     const orderCoords = this.props.order.coords;
     const order = this.props.order;
     const customer = this.props.customer;
@@ -86,6 +102,14 @@ export default class Maps extends React.Component {
               }}
               title="Delivery Location"
             />
+			<Marker
+			  coordinate={{
+				latitude: location.latitude,
+				longitude: location.longitude,
+			  }}
+			  title="Your Location"
+			/>
+
             <Marker
               coordinate={{
                 latitude: 39.73447231382876,

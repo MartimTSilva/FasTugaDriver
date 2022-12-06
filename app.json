@@ -25,7 +25,13 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.grupoDD.FasTugaDriver"
+      "package": "com.grupoDD.FasTugaDriver",
+	  "permissions": [
+		"ACCESS_FINE_LOCATION",
+		"ACCESS_COARSE_LOCATION",
+		"ACCESS_BACKGROUND_LOCATION"
+	  ]
+	
     },
     "web": {
       "favicon": "./assets/favicon.png"
