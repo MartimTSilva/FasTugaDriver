@@ -144,7 +144,7 @@ export default function Dashboard({ route, navigation }) {
       <View
         style={{
           flexDirection: "row",
-          marginTop: 64,
+          marginTop: 52,
           justifyContent: "space-between",
           width: "100%",
           paddingLeft: 22,
@@ -156,7 +156,7 @@ export default function Dashboard({ route, navigation }) {
         }! 👋`}</Text>
         <IconButton
           icon="logout-variant"
-          size={22}
+          size={24}
           iconColor="white"
           onPress={() => logout(navigation)}
         />
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 24,
     color: "white",
-    paddingTop: 8,
+    paddingTop: 9,
   },
 
   dashboard: {

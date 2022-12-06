@@ -1,13 +1,19 @@
 import { DefaultTheme } from "react-native-paper";
 
 export const theme = {
-  ...DefaultTheme,
   colors: {
-    ...DefaultTheme.colors,
     text: "#000000",
     primary: "#FF851B",
     secondary: "#414757",
     error: "#f13a59",
+    elevation: {
+      level0: "transparent",
+      level1: "rgb(250, 241, 250)",
+      level2: "rgb(250, 241, 247)",
+      level3: "rgb(250, 241,245)",
+      level4: "rgb(250, 241, 242)",
+      level5: "rgb(250, 241, 239)",
+    },
   },
 };
 

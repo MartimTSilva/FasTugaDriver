@@ -76,9 +76,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-    >
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.container}>
         <Logo />
         <TextInput
@@ -104,6 +102,7 @@ export default function LoginScreen({ navigation }) {
         />
         <View style={styles.stayLoggedRow}>
           <Checkbox
+            theme={theme}
             status={stayLogged ? "checked" : "unchecked"}
             onPress={() => {
               setStayLogged(!stayLogged);
