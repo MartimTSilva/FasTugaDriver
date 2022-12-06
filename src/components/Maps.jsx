@@ -83,9 +83,9 @@ export default class Maps extends React.Component {
 				   coordinate={this.state.deliveryLocation}
 				   title={"Delivery location"}
 				/>
+				{/*image={require('thumbLocation.png')} para no drawable size check to see the BS https://github.com/react-native-maps/react-native-maps*/}
 				<Marker
 				   coordinate={this.state.currentLocation}
-				   image={{uri: 'thumbLocation'}}
 				   title={"Current location"}
 				/>
 
