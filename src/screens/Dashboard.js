@@ -93,7 +93,7 @@ export default function Dashboard({ route, navigation }) {
 
   async function cancelOrder() {
     if (!justification.value) {
-      setJustification({
+      return setJustification({
         ...justification,
         error: "Justification can't be empty",
       });
