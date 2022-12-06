@@ -11,40 +11,38 @@ export default class Maps extends React.Component {
 	super(props);
 
 	this.state = {
-		currentLocation: { coords: {latitude: 0, longitude: 0}}
+		currentLocation: {},
+		fastugaLocation: { latitude: 39.73447231382876, longitude: -8.821027283140435},
+		deliveryLocation: { latitude: props.order.coords.lat, longitude: props.order.coords.long},
+		get markers() {
+			return [{coordinate: this.fastugaLocation, title:"Fastuga restaurant"}, {coordinate: this.deliveryLocation, title:"Delivery location"}]}
 	};
 }
+  
 
-
-
+componentDidMount () {
+   ( async () => {
+		let { status } = await Location.requestForegroundPermissionsAsync();
+		if (status !== "granted") {
+		  setErrorMsg("Permission to access location was denied");
+		  return;
+		}
+  
+		let location = await Location.getCurrentPositionAsync({});
+		
+		this.state.currentLocation = location.coords;
+		//this.state.markers.push = {coordinate: this.state.currentLocation, title:"Current location"};
+		this.state.markers.push({coordinate: this.state.currentLocation, title:"Current location"});
+  	})();
+	  
+}
   render() {
-	(async () => {
-			console.log("Getting location");
-		  let { status } = await Location.requestForegroundPermissionsAsync();
-		  if (status !== "granted") {
-			setErrorMsg("Permission to access location was denied");
-			return;
-		  }
 	
-		  let location = await Location.getCurrentPositionAsync({});
-		  
-		  this.state.currentLocation = location;
-		  console.log("Location: ", location)
-	})();
-	console.log("Current location: ", this.state.currentLocation);
-    const orderCoords = this.props.order.coords;
+	
     const order = this.props.order;
     const customer = this.props.customer;
-
-    const origin = {
-      latitude: 39.73447231382876,
-      longitude: -8.821027283140435,
-    };
-    const destination = {
-      latitude: orderCoords.lat,
-      longitude: orderCoords.long,
-    };
     const GOOGLE_MAPS_APIKEY = "AIzaSyBDg9iVKHgE7xKL-JTH-Z6p8b5zs1cbGDc";
+	//await until currentLocation is set
 
     return (
       <Card
@@ -84,51 +82,30 @@ export default class Maps extends React.Component {
               aspectRatio: 1.1,
             }}
             initialRegion={{
-              latitude: orderCoords.lat,
-              longitude: orderCoords.long,
+              latitude: this.state.deliveryLocation.latitude,
+              longitude: this.state.deliveryLocation.longitude,
               latitudeDelta: 0.05,
               longitudeDelta: 0.05,
             }}
           >
+			{this.state.markers.map((marker, index) => (
+				
+				 <Marker
+				   key={index}
+				   coordinate={marker.coordinate}
+				   title={marker.title}
+				/>
+				
+			))}
             <MapViewDirections
-              origin={origin}
-              destination={destination}
+              origin={this.state.fastugaLocation}
+              destination={this.state.deliveryLocation}
               apikey={GOOGLE_MAPS_APIKEY}
               strokeWidth={6}
               strokeColor={theme.colors.error}
               optimizeWaypoints={true}
-              // onReady={(result) =>
-              //   console.log(
-              //     "TESTE: ",
-              //     result.distance + "km - " + result.duration
-              //   )
-              // }
             />
-            <Marker
-              coordinate={{
-                latitude: orderCoords.lat,
-                longitude: orderCoords.long,
-              }}
-              title="Delivery Location"
-            />
-		    {
-				//check if currentLocation is not null
-				this.state.currentLocation.coords.latitude != 0 && this.state.currentLocation.coords.longitude != 0 &&
-				<Marker
-			  coordinate={{
-				latitude: this.state.currentLocation.coords.latitude,
-				longitude: this.state.currentLocation.coords.longitude,
-			  }}
-			  title="Your Location"
-			/>}
-
-            <Marker
-              coordinate={{
-                latitude: 39.73447231382876,
-                longitude: -8.821027283140435,
-              }}
-              title="FasTuga Restaurant"
-            />
+            
           </MapView>
         </View>
       </Card>
