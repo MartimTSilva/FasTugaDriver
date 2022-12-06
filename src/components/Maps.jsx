@@ -2,27 +2,36 @@ import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import React from "react";
-import Geolocation from "react-native-geolocation-service";
+import * as Location from "expo-location";
 import { Card, Divider, Text } from "react-native-paper";
 import { theme } from "../core/theme";
 
 export default class Maps extends React.Component {
-  
-  render() {
-	const location = { latitude: 0, longitude: 0 };
-	Geolocation.getCurrentPosition(
-		position => {
-			location.latitude = position.coords.latitude;
-			location.longitude = position.coords.longitude;
-			
-		},{
-			showLocationDialog: true,
-			enableHighAccuracy: true,
-			timeout: 20000,
-			maximumAge: 0
+  constructor(props) {
+	super(props);
 
-		}
-	);
+	this.state = {
+		currentLocation: { coords: {latitude: 0, longitude: 0}}
+	};
+}
+
+
+
+  render() {
+	(async () => {
+			console.log("Getting location");
+		  let { status } = await Location.requestForegroundPermissionsAsync();
+		  if (status !== "granted") {
+			setErrorMsg("Permission to access location was denied");
+			return;
+		  }
+	
+		  let location = await Location.getCurrentPositionAsync({});
+		  
+		  this.state.currentLocation = location;
+		  console.log("Location: ", location)
+	})();
+	console.log("Current location: ", this.state.currentLocation);
     const orderCoords = this.props.order.coords;
     const order = this.props.order;
     const customer = this.props.customer;
@@ -102,13 +111,16 @@ export default class Maps extends React.Component {
               }}
               title="Delivery Location"
             />
-			<Marker
+		    {
+				//check if currentLocation is not null
+				this.state.currentLocation.coords.latitude != 0 && this.state.currentLocation.coords.longitude != 0 &&
+				<Marker
 			  coordinate={{
-				latitude: location.latitude,
-				longitude: location.longitude,
+				latitude: this.state.currentLocation.coords.latitude,
+				longitude: this.state.currentLocation.coords.longitude,
 			  }}
 			  title="Your Location"
-			/>
+			/>}
 
             <Marker
               coordinate={{
