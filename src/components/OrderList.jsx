@@ -14,12 +14,10 @@ import {
 } from "../stores/orders";
 
 export default class OrderList extends React.Component {
-
-
-  async updateOrder(order, newStatus) {
-    await updateOrderAPI(order, newStatus).finally(() =>
-      this.props.updateCallback()
-    );
+  async updateOrder(order, newStatus, user) {
+    await updateOrderAPI(order, newStatus, user, "").finally(() => {
+      this.props.updateCallback();
+    });
   }
 
   pressOrderItem(order) {
@@ -28,6 +26,7 @@ export default class OrderList extends React.Component {
 
   render() {
     const orders = formatOrders(this.props.data);
+    const user = this.props.user;
     return (
       <View>
         {orders.length > 0 ? (
@@ -37,7 +36,7 @@ export default class OrderList extends React.Component {
               <List.Item
                 key={index}
                 style={{ marginRight: -20, marginLeft: -14 }}
-                title={order.customer.slice(0, 16)}
+                title={order.key.slice(0, 16)}
                 descriptionStyle={{ fontWeight: "bold" }}
                 onPress={() => this.pressOrderItem(order)}
                 description={`${getOrderStatusText(order.status)} • ${
@@ -66,9 +65,7 @@ export default class OrderList extends React.Component {
                           mode="contained"
                           containerColor="red"
                           iconColor="white"
-                          onPress={() =>
-                            this.updateOrder(order, DELIVERY_PROBLEM)
-                          }
+                          onPress={() => this.props.cancelCallback(order)}
                         />
                         <IconButton
                           icon="check"
@@ -76,14 +73,18 @@ export default class OrderList extends React.Component {
                           mode="contained"
                           containerColor="green"
                           iconColor="white"
-                          onPress={() => this.updateOrder(order, DELIVERED)}
+                          onPress={() =>
+                            this.updateOrder(order, DELIVERED, user)
+                          }
                         />
                       </View>
                     ) : (
                       <Button
                         mode="contained"
                         buttonColor={theme.colors.secondary}
-                        onPress={() => this.updateOrder(order, DELIVERING)}
+                        onPress={() =>
+                          this.updateOrder(order, DELIVERING, user)
+                        }
                         labelStyle={{
                           marginLeft: 15,
                           marginRight: 15,
@@ -97,7 +98,7 @@ export default class OrderList extends React.Component {
                       icon="clipboard-arrow-down"
                       mode="contained"
                       buttonColor={theme.colors.primary}
-                      onPress={() => this.updateOrder(order)}
+                      onPress={() => this.updateOrder(order, "", user)}
                     >
                       Assign!
                     </Button>
