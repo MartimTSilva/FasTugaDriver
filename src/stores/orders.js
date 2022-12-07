@@ -1,5 +1,8 @@
 import { db } from "../../firebase";
-import { getDistance } from "../utils/locationUtil";
+import {
+  getCoordsDistanceFromRestaurant,
+  getDistance,
+} from "../utils/locationUtil";
 import { query, where, collection, getDocs } from "firebase/firestore";
 
 export const PREPARING = 1;
@@ -71,13 +74,14 @@ export function formatOrders(orderList) {
       status: item.status,
       customer: item.customer,
       assigned: !!item.assigned_driver,
+      price: item.price,
+      number_items: item.number_items,
       //distance to fastuga restaurant
-      distance: getDistance(
-        item.delivery_coords.latitude,
-        item.delivery_coords.longitude,
-        39.73447231382876,
-        -8.821027283140435
-      ),
+      distance: getCoordsDistanceFromRestaurant(item.delivery_coords),
+      coords: {
+        lat: item.delivery_coords.latitude,
+        long: item.delivery_coords.longitude,
+      },
     };
   });
 }

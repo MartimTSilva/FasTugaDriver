@@ -16,13 +16,14 @@ import {
 } from "react-native-paper";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { db } from "../../firebase";
+import { theme } from "../core/theme";
+import * as Location from "expo-location";
 import {
   DELIVERY_PROBLEM,
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
   updateOrderAPI,
 } from "../stores/orders";
-import { theme } from "../core/theme";
 import TextInput from "../components/TextInput";
 
 export default function Dashboard({ route, navigation }) {
@@ -30,6 +31,7 @@ export default function Dashboard({ route, navigation }) {
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const [location, setLocation] = useState(null);
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
@@ -80,6 +82,19 @@ export default function Dashboard({ route, navigation }) {
       })
       .finally(() => setLoading(false));
   }
+  //This fixes the Absolute Sº!º that is Javascript
+
+  async function getLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+
+    setLocation(location);
+  }
 
   async function getAssignedOrders(id) {
     await fetchDriverOrdersAPI(id).then((orders) => {
@@ -129,8 +144,17 @@ export default function Dashboard({ route, navigation }) {
   }
 
   async function refresh() {
+    await getLocation();
     await fetchPrivateInfo();
     await getUnassignedOrders();
+  }
+
+  function viewOrderDetails(order) {
+    navigation.navigate("OrderDetails", {
+      ...order,
+      MEMElatitude: location.coords.latitude,
+      MEMElongitude: location.coords.longitude,
+    });
   }
 
   useEffect(() => {
@@ -201,8 +225,9 @@ export default function Dashboard({ route, navigation }) {
         )}
         <Card.Content>
           <OrderList
-            user={user}
             data={order}
+            onPressOrder={viewOrderDetails}
+            user={user}
             updateCallback={refresh}
             cancelCallback={showCancelationDialog}
           ></OrderList>
@@ -217,8 +242,9 @@ export default function Dashboard({ route, navigation }) {
         )}
         <Card.Content>
           <OrderList
-            user={user}
             data={selfOrder}
+            onPressOrder={viewOrderDetails}
+            user={user}
             updateCallback={refresh}
             cancelCallback={showCancelationDialog}
           ></OrderList>

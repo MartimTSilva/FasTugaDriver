@@ -1,23 +1,27 @@
 import React from "react";
 import { View } from "react-native";
 import { Button, Divider, IconButton, List, Text } from "react-native-paper";
+import { theme } from "../core/theme";
+
 import {
+  PREPARING,
   DELIVERED,
   DELIVERING,
   DELIVERY_PROBLEM,
   formatOrders,
   getOrderStatusText,
-  PREPARING,
-  READY_PICK_UP,
   updateOrderAPI,
 } from "../stores/orders";
-import { theme } from "../core/theme";
 
 export default class OrderList extends React.Component {
   async updateOrder(order, newStatus, user) {
     await updateOrderAPI(order, newStatus, user, "").finally(() => {
       this.props.updateCallback();
     });
+  }
+
+  pressOrderItem(order) {
+    this.props.onPressOrder(order);
   }
 
   render() {
@@ -34,8 +38,9 @@ export default class OrderList extends React.Component {
                 style={{ marginRight: -20, marginLeft: -14 }}
                 title={order.key.slice(0, 16)}
                 descriptionStyle={{ fontWeight: "bold" }}
+                onPress={() => this.pressOrderItem(order)}
                 description={`${getOrderStatusText(order.status)} • ${
-                  Math.round(order.distance * 10) / 10
+                  order.distance
                 } km`}
                 right={() =>
                   order.assigned ? (

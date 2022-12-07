@@ -2,12 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "./src/screens/Login";
-import DashboardScreen from "./src/screens/Dashboard";
-import RegisterScreen from "./src/screens/Register";
 import { ThemeProvider } from "styled-components";
 import { ToastProvider } from "react-native-styled-toast";
 import { theme } from "./src/core/theme";
+import LoginScreen from "./src/screens/Login";
+import DashboardScreen from "./src/screens/Dashboard";
+import RegisterScreen from "./src/screens/Register";
+import OrderDetailsScreen from "./src/screens/OrderDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,11 @@ export default function App() {
           <Stack.Navigator initialRouteName={initScreen}>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen
+              name="OrderDetails"
+              component={OrderDetailsScreen}
+              options={{ title: "Order Details" }}
+            />
             <Stack.Screen
               name="Dashboard"
               component={DashboardScreen}
