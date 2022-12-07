@@ -56,34 +56,32 @@ export default function Dashboard({ navigation }) {
       })
       .finally(() => setLoading(false));
   }
- //This fixes the Absolute Sº!º that is Javascript
- 
-	 async function getLocation() {
-		let { status } = await Location.requestForegroundPermissionsAsync();
-		if (status !== "granted") {
-		  setErrorMsg("Permission to access location was denied");
-		  return;
-		}
-  
-		let location = await Location.getCurrentPositionAsync({});
-		
-		setLocation(location);
+  //This fixes the Absolute Sº!º that is Javascript
 
-		
-	
-  	}
+  async function getLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
 
+    let location = await Location.getCurrentPositionAsync({});
 
-  //end of Sº!º fixing code
+    setLocation(location);
+  }
+
   async function refresh() {
+    await getLocation();
     await fetchPrivateInfo();
     await getUnassignedOrders();
-	await getLocation();
   }
 
   function viewOrderDetails(order) {
-	// yep you've seen it first hand its the only way to deal with this Piece OF S*!º environment
-    navigation.navigate("OrderDetails", {...order, MEMElatitude: location.coords.latitude, MEMElongitude: location.coords.longitude});
+    navigation.navigate("OrderDetails", {
+      ...order,
+      MEMElatitude: location.coords.latitude,
+      MEMElongitude: location.coords.longitude,
+    });
   }
 
   useEffect(() => {

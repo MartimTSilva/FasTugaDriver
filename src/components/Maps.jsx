@@ -8,27 +8,40 @@ import { theme } from "../core/theme";
 
 export default class Maps extends React.Component {
   constructor(props) {
-	super(props);
-	console.log(props)
-	this.state = {
-		currentLocation: { latitude: props.order.MEMElatitude, longitude: props.order.MEMElongitude},
-		fastugaLocation: { latitude: 39.73447231382876, longitude: -8.821027283140435},
-		deliveryLocation: { latitude: props.order.coords.lat, longitude: props.order.coords.long}
-	};
-}
+    super(props);
+    console.log(props);
+    this.state = {
+      currentLocation: {
+        latitude: props.order.MEMElatitude,
+        longitude: props.order.MEMElongitude,
+      },
+      fastugaLocation: {
+        latitude: 39.73447231382876,
+        longitude: -8.821027283140435,
+      },
+      deliveryLocation: {
+        latitude: props.order.coords.lat,
+        longitude: props.order.coords.long,
+      },
+    };
+  }
   render() {
-	
-	let defMarkers= [{coordinate: this.fastugaLocation, title:"Fastuga restaurant"}, {coordinate: this.deliveryLocation, title:"Delivery location"}];
+    let defMarkers = [
+      { coordinate: this.fastugaLocation, title: "Fastuga restaurant" },
+      { coordinate: this.deliveryLocation, title: "Delivery location" },
+    ];
 
-	if(this.currentLocation) {
-		defMarkers= [...defMarkers, {coordinate: this.currentLocation, title:"Current location"}];
-	
-	}
+    if (this.currentLocation) {
+      defMarkers = [
+        ...defMarkers,
+        { coordinate: this.currentLocation, title: "Current location" },
+      ];
+    }
 
     const order = this.props.order;
     const customer = this.props.customer;
     const GOOGLE_MAPS_APIKEY = "AIzaSyBDg9iVKHgE7xKL-JTH-Z6p8b5zs1cbGDc";
-	//await until currentLocation is set
+    //await until currentLocation is set
 
     return (
       <Card
@@ -52,7 +65,9 @@ export default class Maps extends React.Component {
 
         <View style={{ paddingLeft: 18, paddingBottom: 8, marginTop: -12 }}>
           <Text style={styles.cardText}>{customer.name}</Text>
-          <Text style={styles.cardText}>{customer.address + " • (" + order.distance + " km)"}</Text>
+          <Text style={styles.cardText}>
+            {customer.address + " • (" + order.distance + " km)"}
+          </Text>
         </View>
         <View
           style={{
@@ -74,21 +89,20 @@ export default class Maps extends React.Component {
               longitudeDelta: 0.05,
             }}
           >
-			
-				 <Marker
-				   coordinate={this.state.fastugaLocation}
-				   title={"Fastuga restaurant"}
-				/>
-				<Marker
-				   coordinate={this.state.deliveryLocation}
-				   title={"Delivery location"}
-				/>
-				{/*image={require('thumbLocation.png')} para no drawable size check to see the BS https://github.com/react-native-maps/react-native-maps*/}
-				<Marker
-				   coordinate={this.state.currentLocation}
-				   title={"Current location"}
-				/>
-
+            <Marker
+              coordinate={this.state.fastugaLocation}
+              title={"Fastuga restaurant"}
+            />
+            <Marker
+              coordinate={this.state.deliveryLocation}
+              title={"Delivery location"}
+            />
+            {/*image={require('thumbLocation.png')} para no drawable size check to see the BS https://github.com/react-native-maps/react-native-maps*/}
+            <Marker
+              coordinate={this.state.currentLocation}
+              title={"Current location"}
+              pinColor={theme.colors.secondary}
+            />
             <MapViewDirections
               origin={this.state.fastugaLocation}
               destination={this.state.deliveryLocation}
@@ -97,7 +111,6 @@ export default class Maps extends React.Component {
               strokeColor={theme.colors.error}
               optimizeWaypoints={true}
             />
-            
           </MapView>
         </View>
       </Card>
@@ -112,4 +125,3 @@ const styles = StyleSheet.create({
     color: "#4f5d5e",
   },
 });
-
