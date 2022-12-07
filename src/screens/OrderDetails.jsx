@@ -6,7 +6,7 @@ import { db } from "../../firebase";
 import { useEffect, useState } from "react";
 import Maps from "../components/Maps";
 
-export default function OrderDetails({ route, navigation }) {
+export default function OrderDetails({ route }) {
   const [customer, setCustomer] = useState({});
 
   useEffect(() => {

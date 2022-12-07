@@ -2,19 +2,14 @@ import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import React from "react";
-
 import { Card, Divider, Text } from "react-native-paper";
 import { theme } from "../core/theme";
 
 export default class Maps extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
+
     this.state = {
-      currentLocation: {
-        latitude: props.order.MEMElatitude,
-        longitude: props.order.MEMElongitude,
-      },
       fastugaLocation: {
         latitude: 39.73447231382876,
         longitude: -8.821027283140435,
@@ -25,23 +20,11 @@ export default class Maps extends React.Component {
       },
     };
   }
+
   render() {
-    let defMarkers = [
-      { coordinate: this.fastugaLocation, title: "Fastuga restaurant" },
-      { coordinate: this.deliveryLocation, title: "Delivery location" },
-    ];
-
-    if (this.currentLocation) {
-      defMarkers = [
-        ...defMarkers,
-        { coordinate: this.currentLocation, title: "Current location" },
-      ];
-    }
-
     const order = this.props.order;
     const customer = this.props.customer;
     const GOOGLE_MAPS_APIKEY = "AIzaSyBDg9iVKHgE7xKL-JTH-Z6p8b5zs1cbGDc";
-    //await until currentLocation is set
 
     return (
       <Card
@@ -96,12 +79,6 @@ export default class Maps extends React.Component {
             <Marker
               coordinate={this.state.deliveryLocation}
               title={"Delivery location"}
-            />
-            {/*image={require('thumbLocation.png')} para no drawable size check to see the BS https://github.com/react-native-maps/react-native-maps*/}
-            <Marker
-              coordinate={this.state.currentLocation}
-              title={"Current location"}
-              pinColor={theme.colors.secondary}
             />
             <MapViewDirections
               origin={this.state.fastugaLocation}

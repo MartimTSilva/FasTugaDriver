@@ -17,7 +17,6 @@ import {
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
-import * as Location from "expo-location";
 import {
   DELIVERY_PROBLEM,
   fetchDriverOrdersAPI,
@@ -31,7 +30,6 @@ export default function Dashboard({ route, navigation }) {
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
   const [isLoading, setLoading] = useState(true);
-  const [location, setLocation] = useState(null);
 
   const [visible, setVisible] = React.useState(false);
   const showDialog = () => setVisible(true);
@@ -63,7 +61,8 @@ export default function Dashboard({ route, navigation }) {
               })
             );
           });
-        });
+        })
+        .catch((error) => console.log(error));
 
       await getAssignedOrders(userID ? userID : route.params.id);
     } catch (error) {
@@ -80,20 +79,8 @@ export default function Dashboard({ route, navigation }) {
           })
         );
       })
+      .catch((error) => console.log(error))
       .finally(() => setLoading(false));
-  }
-  //This fixes the Absolute Sº!º that is Javascript
-
-  async function getLocation() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setErrorMsg("Permission to access location was denied");
-      return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-
-    setLocation(location);
   }
 
   async function getAssignedOrders(id) {
@@ -144,17 +131,12 @@ export default function Dashboard({ route, navigation }) {
   }
 
   async function refresh() {
-    await getLocation();
     await fetchPrivateInfo();
     await getUnassignedOrders();
   }
 
   function viewOrderDetails(order) {
-    navigation.navigate("OrderDetails", {
-      ...order,
-      MEMElatitude: location.coords.latitude,
-      MEMElongitude: location.coords.longitude,
-    });
+    navigation.navigate("OrderDetails", order);
   }
 
   useEffect(() => {
@@ -162,7 +144,7 @@ export default function Dashboard({ route, navigation }) {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Provider style={styles.container}>
       <StatusBar style="inverted" />
       <View style={styles.dashboard} />
       <View
@@ -203,7 +185,7 @@ export default function Dashboard({ route, navigation }) {
         </Card>
         <Card
           style={{ ...styles.card, width: "45%" }}
-          onPress={() => console.log("ssss")}
+          // onPress={() => console.log("ssss")}
         >
           <Card.Title
             titleStyle={{ ...styles.cardTitle }}
@@ -251,33 +233,31 @@ export default function Dashboard({ route, navigation }) {
         </Card.Content>
       </Card>
 
-      <Provider>
-        <Portal>
-          <Dialog
-            visible={visible}
-            onDismiss={hideDialog}
-            style={{ marginBottom: 200 }}
-            theme={theme}
-          >
-            <Dialog.Title>Cancel Order</Dialog.Title>
-            <Dialog.Content>
-              <TextInput
-                value={justification}
-                label="Justification"
-                onChangeText={justificationHandler}
-                error={justification.error}
-                errorText={justification.error}
-              ></TextInput>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={cancelOrder} textColor={theme.colors.primary}>
-                OK
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-    </SafeAreaView>
+      <Portal>
+        <Dialog
+          visible={visible}
+          onDismiss={hideDialog}
+          style={{ marginBottom: 200 }}
+          theme={theme}
+        >
+          <Dialog.Title>Cancel Order</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              value={justification}
+              label="Justification"
+              onChangeText={justificationHandler}
+              error={justification.error}
+              errorText={justification.error}
+            ></TextInput>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={cancelOrder} textColor={theme.colors.primary}>
+              OK
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </Provider>
   );
 }
 
