@@ -32,6 +32,8 @@ export default function Dashboard({ route, navigation }) {
   const [isLoading, setLoading] = useState(true);
 
   const [visible, setVisible] = React.useState(false);
+  const [notifationsBool, setNotifationsBool] = useState(false);
+
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
   const [justification, setJustification] = useState({ value: "", error: "" });
@@ -160,12 +162,23 @@ export default function Dashboard({ route, navigation }) {
         <Text style={styles.helloText}>{`Hello, ${
           user && user.name ? user.name : "... "
         }! 👋`}</Text>
-        <IconButton
+        <View style={{
+          flexDirection: "row"}}>
+		<IconButton
+          icon="cog"
+          size={24}
+          iconColor="white"
+          onPress={() => setNotifationsBool(notifationsBool?false:true)}
+        />
+		<IconButton
           icon="logout-variant"
           size={24}
           iconColor="white"
           onPress={() => logout(navigation)}
         />
+		</View>
+		
+
       </View>
       <View style={styles.cardRow}>
         <Card style={{ ...styles.card, width: "45%" }}>
@@ -232,7 +245,10 @@ export default function Dashboard({ route, navigation }) {
           ></OrderList>
         </Card.Content>
       </Card>
-
+      <Card style={styles.card}>
+		<Card.Title title="TODO style this somewhere" titleStyle={styles.cardTitle} />
+		<Button onPress={()=>{navigation.replace("NotificationHistory", {"id":user} )}} textColor={theme.colors.primary}>Notification History</Button>
+	  </Card>
       <Portal>
         <Dialog
           visible={visible}

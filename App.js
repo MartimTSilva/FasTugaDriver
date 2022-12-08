@@ -9,7 +9,7 @@ import LoginScreen from "./src/screens/Login";
 import DashboardScreen from "./src/screens/Dashboard";
 import RegisterScreen from "./src/screens/Register";
 import OrderDetailsScreen from "./src/screens/OrderDetails";
-
+import NotificationHistoryScreen from "./src/screens/NotificationHistory";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -44,6 +44,7 @@ export default function App() {
               component={DashboardScreen}
               options={{ headerShown: false }}
             />
+			<Stack.Screen name="NotificationHistory" component={NotificationHistoryScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </ToastProvider>
