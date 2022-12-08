@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import {  React, useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
 import {
   Card,
@@ -14,7 +13,7 @@ import {
   Text,
   IconButton,
 } from "react-native-paper";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { ScrollView, RefreshControl, SafeAreaView, StyleSheet, View } from "react-native";
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
 import {
@@ -24,14 +23,18 @@ import {
   updateOrderAPI,
 } from "../stores/orders";
 import TextInput from "../components/TextInput";
-
+const wait = timeout => {
+	return new Promise(resolve => setTimeout(resolve, timeout));
+  };
+  
 export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
   const [justification, setJustification] = useState({ value: "", error: "" });
@@ -129,6 +132,12 @@ export default function Dashboard({ route, navigation }) {
   function justificationHandler(enteredText) {
     setJustification({ value: enteredText, error: "" });
   }
+  const onRefresh= () => {
+	setRefreshing(true);
+    refresh();
+	wait(2000).then(() => setRefreshing(false));
+  }
+
 
   async function refresh() {
     await fetchPrivateInfo();
@@ -144,6 +153,15 @@ export default function Dashboard({ route, navigation }) {
   }, []);
 
   return (
+	<SafeAreaView>
+	<ScrollView refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+  		  />
+	}	
+  >
+
     <Provider style={styles.container}>
       <StatusBar style="inverted" />
       <View style={styles.dashboard} />
@@ -258,6 +276,8 @@ export default function Dashboard({ route, navigation }) {
         </Dialog>
       </Portal>
     </Provider>
+	</ScrollView>
+	</SafeAreaView>
   );
 }
 
