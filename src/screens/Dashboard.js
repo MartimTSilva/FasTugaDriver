@@ -132,10 +132,10 @@ export default function Dashboard({ route, navigation }) {
   function justificationHandler(enteredText) {
     setJustification({ value: enteredText, error: "" });
   }
-  const onRefresh= () => {
+  const onRefresh= async () => {
 	setRefreshing(true);
-    refresh();
-	wait(2000).then(() => setRefreshing(false));
+    await refresh();
+	wait(500).then(() => setRefreshing(false));
   }
 
 
