@@ -26,12 +26,14 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.grupoDD.FasTugaDriver",
-	  "permissions": [
-		"ACCESS_FINE_LOCATION",
-		"ACCESS_COARSE_LOCATION",
-		"ACCESS_BACKGROUND_LOCATION"
-	  ]
-	
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyBDg9iVKHgE7xKL-JTH-Z6p8b5zs1cbGDc" }   
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
