@@ -145,8 +145,10 @@ export default function Dashboard({ route, navigation }) {
   };
 
   async function refresh() {
+    setLoading(true);
     await fetchPrivateInfo();
     await getUnassignedOrders();
+    setLoading(false);
   }
 
   function viewOrderDetails(order) {
@@ -224,7 +226,11 @@ export default function Dashboard({ route, navigation }) {
               titleStyle={styles.cardTitle}
             />
             {isLoading ? (
-              <ProgressBar color={theme.colors.primary} indeterminate={true} />
+              <ProgressBar
+                color={theme.colors.primary}
+                indeterminate={true}
+                style={{ marginTop: -5 }}
+              />
             ) : (
               <Divider />
             )}
@@ -234,14 +240,18 @@ export default function Dashboard({ route, navigation }) {
                 onPressOrder={viewOrderDetails}
                 user={user}
                 updateCallback={refresh}
-                cancelCallback={showCancelationDialog}
+                isLoading={isLoading}
               ></OrderList>
             </Card.Content>
           </Card>
           <Card style={styles.card}>
             <Card.Title title="My Orders" titleStyle={styles.cardTitle} />
             {isLoading ? (
-              <ProgressBar color={theme.colors.primary} indeterminate={true} />
+              <ProgressBar
+                color={theme.colors.primary}
+                indeterminate={true}
+                style={{ marginTop: -5 }}
+              />
             ) : (
               <Divider />
             )}
@@ -252,6 +262,7 @@ export default function Dashboard({ route, navigation }) {
                 user={user}
                 updateCallback={refresh}
                 cancelCallback={showCancelationDialog}
+                isLoading={isLoading}
               ></OrderList>
             </Card.Content>
           </Card>
