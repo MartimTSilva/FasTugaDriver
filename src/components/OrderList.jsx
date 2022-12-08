@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { Button, Divider, IconButton, List, Text } from "react-native-paper";
+import { Button, IconButton, List, Text } from "react-native-paper";
 import { theme } from "../core/theme";
 
 import {
@@ -27,92 +27,76 @@ export default class OrderList extends React.Component {
   render() {
     const orders = formatOrders(this.props.data);
     const user = this.props.user;
-    return (
-      <View>
-        {orders.length > 0 ? (
-          orders.map((order, index) => (
-            <View key={index}>
-              <Divider />
-              <List.Item
-                key={index}
-                style={{ marginRight: -20, marginLeft: -14 }}
-                title={order.key.slice(0, 16)}
-                descriptionStyle={{ fontWeight: "bold" }}
-                onPress={() => this.pressOrderItem(order)}
-                description={`${getOrderStatusText(order.status)} • ${
-                  order.distance
-                } km`}
-                right={() =>
-                  order.assigned ? (
-                    order.status == PREPARING ? (
-                      <Button
-                        mode="contained"
-                        buttonColor="grey"
-                        disabled={true}
-                        labelStyle={{
-                          marginLeft: 15,
-                          marginRight: 15,
-                          color: "#373837",
-                        }}
-                      >
-                        Waiting..
-                      </Button>
-                    ) : order.status == DELIVERING ? (
-                      <View style={{ flexDirection: "row" }}>
-                        <IconButton
-                          icon="close"
-                          size={23}
-                          mode="contained"
-                          containerColor="red"
-                          iconColor="white"
-                          onPress={() => this.props.cancelCallback(order)}
-                        />
-                        <IconButton
-                          icon="check"
-                          size={23}
-                          mode="contained"
-                          containerColor="green"
-                          iconColor="white"
-                          onPress={() =>
-                            this.updateOrder(order, DELIVERED, user)
-                          }
-                        />
-                      </View>
-                    ) : (
-                      <Button
-                        mode="contained"
-                        buttonColor={theme.colors.secondary}
-                        onPress={() =>
-                          this.updateOrder(order, DELIVERING, user)
-                        }
-                        labelStyle={{
-                          marginLeft: 15,
-                          marginRight: 15,
-                        }}
-                      >
-                        Picked up
-                      </Button>
-                    )
-                  ) : (
-                    <Button
-                      icon="clipboard-arrow-down"
+    return orders.length > 0 ? (
+      orders.map((order, index) => (
+        <View key={index}>
+          <List.Item
+            key={index}
+            style={{
+              marginLeft: -16,
+              marginRight: -16,
+            }}
+            title={order.key.slice(0, 16)}
+            descriptionStyle={{ fontWeight: "bold" }}
+            onPress={() => this.pressOrderItem(order)}
+            description={`${getOrderStatusText(order.status)} • ${
+              order.distance
+            } km`}
+            right={() =>
+              order.assigned ? (
+                order.status == PREPARING ? (
+                  <View />
+                ) : order.status == DELIVERING ? (
+                  <View style={{ flexDirection: "row" }}>
+                    <IconButton
+                      icon="close"
+                      size={23}
                       mode="contained"
-                      buttonColor={theme.colors.primary}
-                      onPress={() => this.updateOrder(order, "", user)}
-                    >
-                      Assign!
-                    </Button>
-                  )
-                }
-              />
-            </View>
-          ))
-        ) : (
-          <Text style={{ fontStyle: "italic", color: "grey", paddingTop: 10 }}>
-            There are no orders..
-          </Text>
-        )}
-      </View>
+                      containerColor="red"
+                      iconColor="white"
+                      onPress={() => this.props.cancelCallback(order)}
+                    />
+                    <IconButton
+                      icon="check"
+                      size={23}
+                      mode="contained"
+                      containerColor="green"
+                      iconColor="white"
+                      onPress={() => this.updateOrder(order, DELIVERED, user)}
+                    />
+                  </View>
+                ) : (
+                  <Button
+                    mode="contained"
+                    buttonColor={theme.colors.secondary}
+                    onPress={() => this.updateOrder(order, DELIVERING, user)}
+                    labelStyle={{
+                      marginLeft: 12,
+                      marginRight: 12,
+                    }}
+                  >
+                    Picked up
+                  </Button>
+                )
+              ) : (
+                <Button
+                  icon="clipboard-arrow-down"
+                  mode="contained"
+                  buttonColor={theme.colors.primary}
+                  onPress={() => this.updateOrder(order, "", user)}
+                  style={{ marginRight: -12 }}
+                >
+                  Assign!
+                </Button>
+              )
+            }
+          />
+        </View>
+      ))
+    ) : (
+      <Text style={{ fontStyle: "italic", color: "grey", paddingVertical: 10 }}>
+        There are no orders..
+      </Text>
     );
   }
 }

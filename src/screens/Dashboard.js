@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
 import {
   Card,
@@ -14,7 +13,13 @@ import {
   Text,
   IconButton,
 } from "react-native-paper";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  ScrollView,
+  RefreshControl,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
 import {
@@ -24,14 +29,18 @@ import {
   updateOrderAPI,
 } from "../stores/orders";
 import TextInput from "../components/TextInput";
+const wait = (timeout) => {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+};
 
 export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
   const [justification, setJustification] = useState({ value: "", error: "" });
@@ -129,6 +138,11 @@ export default function Dashboard({ route, navigation }) {
   function justificationHandler(enteredText) {
     setJustification({ value: enteredText, error: "" });
   }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refresh();
+    wait(500).then(() => setRefreshing(false));
+  };
 
   async function refresh() {
     await fetchPrivateInfo();
@@ -144,120 +158,131 @@ export default function Dashboard({ route, navigation }) {
   }, []);
 
   return (
-    <Provider style={styles.container}>
-      <StatusBar style="inverted" />
-      <View style={styles.dashboard} />
-      <View
-        style={{
-          flexDirection: "row",
-          marginTop: 52,
-          justifyContent: "space-between",
-          width: "100%",
-          paddingLeft: 22,
-          paddingRight: 8,
-        }}
-      >
-        <Text style={styles.helloText}>{`Hello, ${
-          user && user.name ? user.name : "... "
-        }! 👋`}</Text>
-        <IconButton
-          icon="logout-variant"
-          size={24}
-          iconColor="white"
-          onPress={() => logout(navigation)}
-        />
-      </View>
-      <View style={styles.cardRow}>
-        <Card style={{ ...styles.card, width: "45%" }}>
-          <Card.Title
-            titleStyle={{ ...styles.cardTitle }}
-            title="Balance  💸"
-          />
-          <Card.Content style={{ paddingTop: 6, marginBottom: -6 }}>
-            <Text
-              style={{
-                color: theme.colors.primary,
-                fontWeight: "bold",
-                fontSize: 22,
-              }}
-            >{`${user && user.balance ? user.balance : "..."}€`}</Text>
-          </Card.Content>
-        </Card>
-        <Card
-          style={{ ...styles.card, width: "45%" }}
-          // onPress={() => console.log("ssss")}
+    <SafeAreaView style={{ height: "100%" }}>
+      <Provider style={styles.container}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
-          <Card.Title
-            titleStyle={{ ...styles.cardTitle }}
-            title="Statistics  📊"
-          />
-          <Card.Content style={{ marginBottom: -6 }}>
-            <Text style={{ fontStyle: "italic" }}>
-              View statistics about your work!
-            </Text>
-          </Card.Content>
-        </Card>
-      </View>
-      <Card style={styles.card}>
-        <Card.Title title="Available Orders" titleStyle={styles.cardTitle} />
-        {isLoading ? (
-          <ProgressBar color={theme.colors.primary} indeterminate={true} />
-        ) : (
-          <Divider />
-        )}
-        <Card.Content>
-          <OrderList
-            data={order}
-            onPressOrder={viewOrderDetails}
-            user={user}
-            updateCallback={refresh}
-            cancelCallback={showCancelationDialog}
-          ></OrderList>
-        </Card.Content>
-      </Card>
-      <Card style={styles.card}>
-        <Card.Title title="My Orders" titleStyle={styles.cardTitle} />
-        {isLoading ? (
-          <ProgressBar color={theme.colors.primary} indeterminate={true} />
-        ) : (
-          <Divider />
-        )}
-        <Card.Content>
-          <OrderList
-            data={selfOrder}
-            onPressOrder={viewOrderDetails}
-            user={user}
-            updateCallback={refresh}
-            cancelCallback={showCancelationDialog}
-          ></OrderList>
-        </Card.Content>
-      </Card>
+          <StatusBar style="inverted" />
+          <View style={styles.dashboard} />
+          <View
+            style={{
+              flexDirection: "row",
+              marginTop: 38,
+              justifyContent: "space-between",
+              width: "100%",
+              paddingLeft: 22,
+              paddingRight: 8,
+            }}
+          >
+            <Text style={styles.helloText}>{`Hello, ${
+              user && user.name ? user.name.split(" ")[0] : "... "
+            }! 👋`}</Text>
+            <IconButton
+              icon="logout-variant"
+              size={24}
+              iconColor="white"
+              onPress={() => logout(navigation)}
+            />
+          </View>
+          <View style={styles.cardRow}>
+            <Card style={{ ...styles.card, width: "45%" }}>
+              <Card.Title
+                titleStyle={{ ...styles.cardTitle }}
+                title="Balance  💸"
+              />
+              <Card.Content style={{ paddingTop: 6, marginBottom: -6 }}>
+                <Text
+                  style={{
+                    color: theme.colors.primary,
+                    fontWeight: "bold",
+                    fontSize: 22,
+                  }}
+                >{`${user && user.balance ? user.balance : "..."}€`}</Text>
+              </Card.Content>
+            </Card>
+            <Card
+              style={{ ...styles.card, width: "45%" }}
+              // onPress={() => console.log("ssss")}
+            >
+              <Card.Title
+                titleStyle={{ ...styles.cardTitle }}
+                title="Statistics  📊"
+              />
+              <Card.Content style={{ marginBottom: -6 }}>
+                <Text style={{ fontStyle: "italic" }}>
+                  View statistics about your work!
+                </Text>
+              </Card.Content>
+            </Card>
+          </View>
+          <Card style={styles.card}>
+            <Card.Title
+              title="Available Orders"
+              titleStyle={styles.cardTitle}
+            />
+            {isLoading ? (
+              <ProgressBar color={theme.colors.primary} indeterminate={true} />
+            ) : (
+              <Divider />
+            )}
+            <Card.Content style={{ marginBottom: -15.75 }}>
+              <OrderList
+                data={order}
+                onPressOrder={viewOrderDetails}
+                user={user}
+                updateCallback={refresh}
+                cancelCallback={showCancelationDialog}
+              ></OrderList>
+            </Card.Content>
+          </Card>
+          <Card style={styles.card}>
+            <Card.Title title="My Orders" titleStyle={styles.cardTitle} />
+            {isLoading ? (
+              <ProgressBar color={theme.colors.primary} indeterminate={true} />
+            ) : (
+              <Divider />
+            )}
+            <Card.Content style={{ marginBottom: -15.75 }}>
+              <OrderList
+                data={selfOrder}
+                onPressOrder={viewOrderDetails}
+                user={user}
+                updateCallback={refresh}
+                cancelCallback={showCancelationDialog}
+              ></OrderList>
+            </Card.Content>
+          </Card>
 
-      <Portal>
-        <Dialog
-          visible={visible}
-          onDismiss={hideDialog}
-          style={{ marginBottom: 200 }}
-          theme={theme}
-        >
-          <Dialog.Title>Cancel Order</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              value={justification}
-              label="Justification"
-              onChangeText={justificationHandler}
-              error={justification.error}
-              errorText={justification.error}
-            ></TextInput>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={cancelOrder} textColor={theme.colors.primary}>
-              OK
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </Provider>
+          <Portal>
+            <Dialog
+              visible={visible}
+              onDismiss={hideDialog}
+              style={{ marginBottom: 200 }}
+              theme={theme}
+            >
+              <Dialog.Title>Cancel Order</Dialog.Title>
+              <Dialog.Content>
+                <TextInput
+                  value={justification}
+                  label="Justification"
+                  onChangeText={justificationHandler}
+                  error={justification.error}
+                  errorText={justification.error}
+                ></TextInput>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={cancelOrder} textColor={theme.colors.primary}>
+                  OK
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </ScrollView>
+      </Provider>
+    </SafeAreaView>
   );
 }
 
@@ -271,7 +296,8 @@ const styles = StyleSheet.create({
   card: {
     alignSelf: "stretch",
     marginHorizontal: 20,
-    marginTop: 20,
+    marginTop: 15,
+    marginBottom: 5,
   },
 
   cardTitle: {
@@ -299,7 +325,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     borderBottomEndRadius: 25,
     borderBottomStartRadius: 25,
-    paddingBottom: 291.5,
+    paddingBottom: 240,
     position: "absolute",
     top: 0,
     left: 0,
