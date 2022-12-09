@@ -10,6 +10,8 @@ import DashboardScreen from "./src/screens/Dashboard";
 import RegisterScreen from "./src/screens/Register";
 import OrderDetailsScreen from "./src/screens/OrderDetails";
 
+import ProfileScreen from "./src/screens/Profile";
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -43,6 +45,11 @@ export default function App() {
               name="Dashboard"
               component={DashboardScreen}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: "Profile" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
