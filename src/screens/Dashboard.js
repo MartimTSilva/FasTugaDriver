@@ -205,7 +205,7 @@ export default function Dashboard({ route, navigation }) {
             </Card>
             <Card
               style={{ ...styles.card, width: "45%" }}
-              // onPress={() => console.log("ssss")}
+              onPress={() => navigation.navigate("Statistics", user)}
             >
               <Card.Title
                 titleStyle={{ ...styles.cardTitle }}

@@ -19,6 +19,7 @@ export default function TextInput({
         {...props}
         editable={editable}
         maxLength={30}
+        activeOutlineColor={theme.colors.primary}
       />
       {description && !errorText ? (
         <Text style={styles.description}>{description}</Text>
