@@ -14,7 +14,7 @@ import {
   Text,
   IconButton,
 } from "react-native-paper";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
 import {
@@ -37,19 +37,13 @@ export default function Dashboard({ route, navigation }) {
   const [justification, setJustification] = useState({ value: "", error: "" });
   const [orderBeingCancelled, setOrderBeingCancelled] = useState(null);
 
-  
-  
-
   //on drag down refresh page
   async function fetchPrivateInfo() {
     try {
       let userID;
-      console.log(route.params.id)
       await AsyncStorage.getItem("@userData").then((res) => {
         userID = res ? JSON.parse(res).id : route.params.id;
         setUser(JSON.parse(res));
-       
-        
       });
 
       await db
@@ -70,7 +64,6 @@ export default function Dashboard({ route, navigation }) {
         })
         .catch((error) => console.log(error));
 
-        
       await getAssignedOrders(userID ? userID : route.params.id);
     } catch (error) {
       console.log(error);
@@ -99,7 +92,6 @@ export default function Dashboard({ route, navigation }) {
       );
     });
   }
-  
 
   async function cancelOrder() {
     if (!justification.value) {
@@ -128,11 +120,14 @@ export default function Dashboard({ route, navigation }) {
     setOrderBeingCancelled(order);
     showDialog();
   }
-  const viewProfile = (navigation) =>{
+
+  const viewProfile = (navigation) => {
     navigation.navigate("Profile", {
       user: user,
+      fetchUserDataCallback: refresh,
     });
-  }
+  };
+
   const logout = (navigation) => {
     AsyncStorage.removeItem("@userData");
     navigation.replace("Login");
@@ -143,10 +138,8 @@ export default function Dashboard({ route, navigation }) {
   }
 
   async function refresh() {
-    
     await fetchPrivateInfo();
     await getUnassignedOrders();
-    console.log(user)
   }
 
   function viewOrderDetails(order) {
@@ -156,7 +149,7 @@ export default function Dashboard({ route, navigation }) {
   useEffect(() => {
     refresh();
   }, []);
-  
+
   return (
     <Provider style={styles.container}>
       <StatusBar style="inverted" />
@@ -174,19 +167,21 @@ export default function Dashboard({ route, navigation }) {
         <Text style={styles.helloText}>{`Hello, ${
           user && user.name ? user.name : "... "
         }! 👋`}</Text>
-      <IconButton
-      style={{ left: 25}}
-          icon="account"
-          size={24}
-          iconColor="white"
-          onPress={() => viewProfile(navigation)}
-        />
-        <IconButton
-          icon="logout-variant"
-          size={24}
-          iconColor="white"
-          onPress={() => logout(navigation)}
-        />
+        <View style={{ flexDirection: "row" }}>
+          <IconButton
+            style={{ marginRight: -2 }}
+            icon="account"
+            size={24}
+            iconColor="white"
+            onPress={() => viewProfile(navigation)}
+          />
+          <IconButton
+            icon="logout-variant"
+            size={24}
+            iconColor="white"
+            onPress={() => logout(navigation)}
+          />
+        </View>
       </View>
       <View style={styles.cardRow}>
         <Card style={{ ...styles.card, width: "45%" }}>
@@ -227,7 +222,7 @@ export default function Dashboard({ route, navigation }) {
         ) : (
           <Divider />
         )}
-        
+
         <Card.Content>
           <OrderList
             data={order}
