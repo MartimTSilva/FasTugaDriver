@@ -4,6 +4,7 @@ import {
   getDistance,
 } from "../utils/locationUtil";
 import { query, where, collection, getDocs } from "firebase/firestore";
+import {Notifications} from 'react-native-notifications';
 
 export const PREPARING = 1;
 export const READY_PICK_UP = 2;
@@ -66,7 +67,6 @@ export function getOrderStatusText(status) {
       return "Preparing";
   }
 }
-
 export function formatOrders(orderList) {
   return orderList.map((item) => {
     return {

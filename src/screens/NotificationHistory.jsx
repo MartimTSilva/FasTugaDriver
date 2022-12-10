@@ -3,6 +3,7 @@ import { Card, Text } from "react-native-paper";
 import { React, useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { query, where, collection, getDocs } from "firebase/firestore";
+
 const wait = timeout => {
 	return new Promise(resolve => setTimeout(resolve, timeout));
   };
@@ -46,7 +47,7 @@ export default function NotificationHistory({ route, navigation }) {
 		setRefreshing(true);
 		await refresh();
 		wait(500).then(() => setRefreshing(false));
-	  }
+	}
 	
 	return (
 		<SafeAreaView>
