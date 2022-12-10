@@ -23,12 +23,12 @@ import {
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
 import {
-  DELIVERY_PROBLEM,
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
   updateOrderAPI,
 } from "../stores/orders";
 import TextInput from "../components/TextInput";
+import { DELIVERY_PROBLEM } from "../utils/utils";
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
@@ -61,6 +61,7 @@ export default function Dashboard({ route, navigation }) {
         .get()
         .then(async (snapshot) => {
           if (snapshot.exists) {
+            console.log('TESTE:', snapshot.data());
             setUser({ ...snapshot.data(), id: userID });
           }
           await fetchDriverOrdersAPI(snapshot.id).then((orders) => {

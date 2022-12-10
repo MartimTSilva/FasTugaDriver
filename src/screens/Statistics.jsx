@@ -1,10 +1,7 @@
 import { StyleSheet, ScrollView, View } from "react-native";
-import { Card } from "react-native-paper";
-import { db } from "../../firebase";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
 import StatisticsCard from "../components/StatisticsCard";
-import { getTime } from "../utils/statisticsUtil";
+import { fetchStatisticsAPI, getTime } from "../stores/statistics";
 
 const UNAVAILABLE_TEXT = "N/A";
 
@@ -20,18 +17,8 @@ export default function OrderDetails({ route }) {
   }, []);
 
   async function fetchStatistics() {
-    const unssOrdersQuery = query(
-      collection(db, "statistics"),
-      where("driver", "==", route.params.id)
-    );
-
-    await getDocs(unssOrdersQuery).then((res) => {
-      setStatistics(
-        res.docs.map((doc) => {
-          return { ...doc.data() };
-        })[0]
-      );
-    });
+    const statistics = await fetchStatisticsAPI(route.params.id);
+    setStatistics(statistics)
   }
 
   return (
@@ -52,7 +39,7 @@ export default function OrderDetails({ route }) {
             value: statistics
               ? `${statistics.total_finished_deliveries}/${
                   statistics.total_finished_deliveries +
-                  statistics.total_canceled_deliveries
+                  statistics.total_cancelled_deliveries
                 }`
               : UNAVAILABLE_TEXT,
             isLoading: loading,

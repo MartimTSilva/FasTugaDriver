@@ -2,16 +2,12 @@ import React from "react";
 import { View } from "react-native";
 import { Button, IconButton, List, Text } from "react-native-paper";
 import { theme } from "../core/theme";
-
 import {
-  PREPARING,
-  DELIVERED,
-  DELIVERING,
-  DELIVERY_PROBLEM,
   formatOrders,
   getOrderStatusText,
   updateOrderAPI,
 } from "../stores/orders";
+import { DELIVERED, DELIVERING, PREPARING } from "../utils/utils";
 
 export default class OrderList extends React.Component {
   async updateOrder(order, newStatus, user) {
