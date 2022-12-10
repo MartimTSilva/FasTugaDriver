@@ -23,12 +23,12 @@ import {
 import { db } from "../../firebase";
 import { theme } from "../core/theme";
 import {
-  DELIVERY_PROBLEM,
   fetchDriverOrdersAPI,
   fetchUnassignedOrdersAPI,
   updateOrderAPI,
 } from "../stores/orders";
 import TextInput from "../components/TextInput";
+import { DELIVERY_PROBLEM } from "../utils/utils";
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
@@ -223,7 +223,7 @@ export default function Dashboard({ route, navigation }) {
             </Card>
             <Card
               style={{ ...styles.card, width: "45%" }}
-              // onPress={() => console.log("ssss")}
+              onPress={() => navigation.navigate("Statistics", user)}
             >
               <Card.Title
                 titleStyle={{ ...styles.cardTitle }}

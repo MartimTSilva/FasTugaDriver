@@ -10,6 +10,7 @@ import LoginScreen from "./src/screens/Login";
 import DashboardScreen from "./src/screens/Dashboard";
 import RegisterScreen from "./src/screens/Register";
 import OrderDetailsScreen from "./src/screens/OrderDetails";
+import StatisticsScreen from "./src/screens/Statistics";
 import MapDirectionsScreen from "./src/screens/MapDirections";
 import ProfileScreen from "./src/screens/Profile";
 
@@ -57,6 +58,7 @@ export default function App() {
               component={DashboardScreen}
               options={{ headerShown: false }}
             />
+            <Stack.Screen name="Statistics" component={StatisticsScreen} />
             <Stack.Screen
               name="Profile"
               component={ProfileScreen}

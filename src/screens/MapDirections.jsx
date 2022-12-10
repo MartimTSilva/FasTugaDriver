@@ -2,8 +2,6 @@ import Directions from "../components/Directions";
 import { FASTUGA_LOCATION } from "../utils/locationUtil";
 
 export default function OrderDetails({ route, navigation }) {
-  console.log("TESTE: ", route.params.data);
-
   const destinationCoords =
     route.params.data.status == 3 ? route.params.data.coords : FASTUGA_LOCATION;
 
