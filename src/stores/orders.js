@@ -55,7 +55,7 @@ export async function updateOrderAPI(order, newStatus, user, justification) {
     delivery_end: firebase.firestore.FieldValue.serverTimestamp(),
   };
 
-  //return await db.collection("orders").doc(order.key).update(updateObj);
+  return await db.collection("orders").doc(order.key).update(updateObj);
 }
 
 export async function fetchUnassignedOrdersAPI() {

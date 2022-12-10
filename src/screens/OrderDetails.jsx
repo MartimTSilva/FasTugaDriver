@@ -66,7 +66,6 @@ export default function OrderDetails({ route, navigation }) {
       <Maps
         viewDirectionsCallback={() => {
           const order = route.params;
-          console.log("TESTE: ", order);
           navigation.navigate("MapDirections", {
             name:
               order.status == 2

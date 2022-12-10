@@ -61,7 +61,6 @@ export default function Dashboard({ route, navigation }) {
         .get()
         .then(async (snapshot) => {
           if (snapshot.exists) {
-            console.log('TESTE:', snapshot.data());
             setUser({ ...snapshot.data(), id: userID });
           }
           await fetchDriverOrdersAPI(snapshot.id).then((orders) => {
