@@ -8,8 +8,8 @@ import { Image } from "react-native";
 
 const LATITUDE_DELTA = 0.0025;
 const LONGITUDE_DELTA = 0.0025;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
+const LATITUDE = FASTUGA_LOCATION.latitude;
+const LONGITUDE = FASTUGA_LOCATION.latitude;
 
 export default class Directions extends React.Component {
   constructor(props) {
