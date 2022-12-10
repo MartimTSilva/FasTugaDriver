@@ -5,15 +5,22 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ThemeProvider } from "styled-components";
 import { ToastProvider } from "react-native-styled-toast";
 import { theme } from "./src/core/theme";
+import { LogBox } from "react-native";
 import LoginScreen from "./src/screens/Login";
 import DashboardScreen from "./src/screens/Dashboard";
 import RegisterScreen from "./src/screens/Register";
 import OrderDetailsScreen from "./src/screens/OrderDetails";
 import MapDirectionsScreen from "./src/screens/MapDirections";
+import ProfileScreen from "./src/screens/Profile";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  LogBox.ignoreLogs([
+    "Non-serializable values were found in the navigation state",
+    "setNativeProps is deprecated and will be removed in next major release"
+  ]);
+
   const [initScreen, setInitScreen] = useState(null);
 
   useEffect(() => {
@@ -49,6 +56,11 @@ export default function App() {
               name="Dashboard"
               component={DashboardScreen}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{ title: "Profile" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

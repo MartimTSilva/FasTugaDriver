@@ -60,7 +60,7 @@ export function getOrderStatusText(status) {
       return "Delivering";
 
     case 2:
-      return "Ready for pick-up";
+      return "Pick-up ready";
 
     default:
       return "Preparing";
@@ -86,7 +86,7 @@ export function formatOrders(orderList) {
   });
 }
 
-function calculateOrderEarnings(distance) {
+export function calculateOrderEarnings(distance) {
   //Drivers earn fixed fees: 2€ per routes up until 3 km; 3€ per routes up until 10 km; and, 4€ for routes of greater length.
   if (distance <= 3.0) {
     return 2;
