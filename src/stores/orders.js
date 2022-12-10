@@ -79,8 +79,8 @@ export function formatOrders(orderList) {
       //distance to fastuga restaurant
       distance: getCoordsDistanceFromRestaurant(item.delivery_coords),
       coords: {
-        lat: item.delivery_coords.latitude,
-        long: item.delivery_coords.longitude,
+        latitude: item.delivery_coords.latitude,
+        longitude: item.delivery_coords.longitude,
       },
     };
   });

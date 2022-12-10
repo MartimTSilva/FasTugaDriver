@@ -10,6 +10,7 @@ import LoginScreen from "./src/screens/Login";
 import DashboardScreen from "./src/screens/Dashboard";
 import RegisterScreen from "./src/screens/Register";
 import OrderDetailsScreen from "./src/screens/OrderDetails";
+import MapDirectionsScreen from "./src/screens/MapDirections";
 import ProfileScreen from "./src/screens/Profile";
 
 const Stack = createNativeStackNavigator();
@@ -17,6 +18,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   LogBox.ignoreLogs([
     "Non-serializable values were found in the navigation state",
+    "setNativeProps is deprecated and will be removed in next major release"
   ]);
 
   const [initScreen, setInitScreen] = useState(null);
@@ -40,6 +42,11 @@ export default function App() {
           <Stack.Navigator initialRouteName={initScreen}>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen
+              name="MapDirections"
+              component={MapDirectionsScreen}
+              options={({ route }) => ({ title: route.params.name })}
+            />
             <Stack.Screen
               name="OrderDetails"
               component={OrderDetailsScreen}
