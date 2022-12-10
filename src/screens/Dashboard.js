@@ -131,6 +131,13 @@ export default function Dashboard({ route, navigation }) {
     showDialog();
   }
 
+  const viewProfile = (navigation) => {
+    navigation.navigate("Profile", {
+      user: user,
+      fetchUserDataCallback: refresh,
+    });
+  };
+
   const logout = (navigation) => {
     AsyncStorage.removeItem("@userData");
     navigation.replace("Login");
@@ -146,8 +153,10 @@ export default function Dashboard({ route, navigation }) {
   };
 
   async function refresh() {
+    setLoading(true);
     await fetchPrivateInfo();
     await getUnassignedOrders();
+    setLoading(false);
   }
 
   function viewOrderDetails(order) {
@@ -171,7 +180,7 @@ export default function Dashboard({ route, navigation }) {
           <View
             style={{
               flexDirection: "row",
-              marginTop: 38,
+              marginTop: 52,
               justifyContent: "space-between",
               width: "100%",
               paddingLeft: 22,
@@ -181,12 +190,21 @@ export default function Dashboard({ route, navigation }) {
             <Text style={styles.helloText}>{`Hello, ${
               user && user.name ? user.name.split(" ")[0] : "... "
             }! 👋`}</Text>
-            <IconButton
-              icon="logout-variant"
-              size={24}
-              iconColor="white"
-              onPress={() => logout(navigation)}
-            />
+            <View style={{ flexDirection: "row" }}>
+              <IconButton
+                style={{ marginRight: -2 }}
+                icon="account"
+                size={24}
+                iconColor="white"
+                onPress={() => viewProfile(navigation)}
+              />
+              <IconButton
+                icon="logout-variant"
+                size={24}
+                iconColor="white"
+                onPress={() => logout(navigation)}
+              />
+            </View>
           </View>
           <View style={styles.cardRow}>
             <Card style={{ ...styles.card, width: "45%" }}>
@@ -225,7 +243,11 @@ export default function Dashboard({ route, navigation }) {
               titleStyle={styles.cardTitle}
             />
             {isLoading ? (
-              <ProgressBar color={theme.colors.primary} indeterminate={true} />
+              <ProgressBar
+                color={theme.colors.primary}
+                indeterminate={true}
+                style={{ marginTop: -5 }}
+              />
             ) : (
               <Divider />
             )}
@@ -235,14 +257,18 @@ export default function Dashboard({ route, navigation }) {
                 onPressOrder={viewOrderDetails}
                 user={user}
                 updateCallback={refresh}
-                cancelCallback={showCancelationDialog}
+                isLoading={isLoading}
               ></OrderList>
             </Card.Content>
           </Card>
           <Card style={styles.card}>
             <Card.Title title="My Orders" titleStyle={styles.cardTitle} />
             {isLoading ? (
-              <ProgressBar color={theme.colors.primary} indeterminate={true} />
+              <ProgressBar
+                color={theme.colors.primary}
+                indeterminate={true}
+                style={{ marginTop: -5 }}
+              />
             ) : (
               <Divider />
             )}
@@ -253,6 +279,7 @@ export default function Dashboard({ route, navigation }) {
                 user={user}
                 updateCallback={refresh}
                 cancelCallback={showCancelationDialog}
+                isLoading={isLoading}
               ></OrderList>
             </Card.Content>
           </Card>

@@ -32,7 +32,7 @@ export default function TextInput({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginVertical: 5,
+    marginVertical: 7.5,
   },
   input: {
     backgroundColor: theme.colors.surface,
