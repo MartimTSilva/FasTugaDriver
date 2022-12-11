@@ -15,3 +15,5 @@ web-build/
 .DS_Store
 package-lock.json
 firebase-fun/index.js
+
+firebase-fun/privatekey.json

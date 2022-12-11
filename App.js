@@ -37,10 +37,10 @@ export default function App() {
   useEffect(()=>{
 	if(requestNotificationPermission()){
 		messaging().getToken().then(token=>{
-			console.log(token)
+			AsyncStorage.setItem("@fcmToken", token)
 		})
 	}else{
-		console.log("failed token", authStatus)
+		alert("Failed to acquire token for notifications: ", authStatus)
 	}
 	messaging().getInitialNotification().then(remoteMessage => { 
 		if (remoteMessage){

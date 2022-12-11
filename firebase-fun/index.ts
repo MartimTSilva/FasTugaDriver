@@ -1,30 +1,35 @@
-//firebase get orders 
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
-
- 
+const FCM = require('fcm-notification');
+const serverKey='./privatekey.json';
+const fcm = new FCM(serverKey);
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAO9FQOrl-DzEwFJBN9RR59T-lxn8RsoB4",
-  authDomain: "fastugadriver-taes.firebaseapp.com",
-  projectId: "fastugadriver-taes",
-  storageBucket: "fastugadriver-taes.appspot.com",
-  messagingSenderId: "169236192365",
-  appId: "1:169236192365:web:c7149e73e6738e0a353364",
-};
+	apiKey: "AIzaSyAO9FQOrl-DzEwFJBN9RR59T-lxn8RsoB4",
+	authDomain: "fastugadriver-taes.firebaseapp.com",
+	projectId: "fastugadriver-taes",
+	storageBucket: "fastugadriver-taes.appspot.com",
+	messagingSenderId: "169236192365",
+	appId: "1:169236192365:web:c7149e73e6738e0a353364",
+	measurementId: "G-7LHG2G85ZH"
+  };
+  
+  
 
 let app;
 
-if (!firebase.apps.length) {
   app = firebase.initializeApp(firebaseConfig);
-} else {
-  app = firebase.app();
-}
+  
+  //messaging = getMessaging(app); 
+
+
 
 const db = app.firestore();
-const auth = firebase.auth;
 
+/*messaging().getToken().then((currentToken) => {
+	messagingToken=currentToken;
+});*/
 //go to db and get orders where status is 2 (pending)
 export const getCanceledOrders = async () => {
 	//orders where status is 5 and the order id is not present on notifications causeOrder
@@ -39,10 +44,38 @@ getCanceledOrders().then((orders) => {
   orders.forEach((order) => {
 	db.collection("notifications").add({
 	  causeOrder: order.id,
-	  created_on: firebase.firestore.Timestamp.fromDate(new Date()),
+	  created_on: new Date(),
 	  message: "A tua encomenda foi cancelada porque: " + order.cancel_justification,
 	  owner: order.assigned_driver,
 	});
-  }); 
+	
+	//send notification with topic order.assigned_driver
+	console.log("Sending notification to: "+order.assigned_driver)
+	const message = {
+		
+		android: {
+		  priority: "HIGH",
+		  notification: {
+			title: "Encomenda "+order.id.slice(0,6)+" cancelada",
+			body: "A tua encomenda foi cancelada porque: " + order.cancel_justification,
+			
+		  }
+
+		},
+
+		topic: order.assigned_driver,
+	  };
+	  
+	  fcm.send(message, function (err, response) {
+		if (err) {
+		  console.log("Something has gone wrong!");
+		  console.log(err);
+		} else {
+		  console.log("Successfully sent with response: ", response);
+		}
+	}); 
+	
+  });
+ 
 
 });

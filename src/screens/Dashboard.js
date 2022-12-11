@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
 import { React, useEffect, useState } from "react";
 import OrderList from "../components/OrderList";
+import messaging from "@react-native-firebase/messaging"; 
 import {
   Card,
   Divider,
@@ -37,6 +38,7 @@ export default function Dashboard({ route, navigation }) {
   const [user, setUser] = useState(null);
   const [order, setOrder] = useState([]);
   const [selfOrder, setSelfOrder] = useState([]);
+  const [tkn, setTkn] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -64,6 +66,16 @@ export default function Dashboard({ route, navigation }) {
           if (snapshot.exists) {
             setUser({ ...snapshot.data(), id: userID });
           }
+		  
+		  AsyncStorage.getItem("@fcmToken").then((res) => {
+			setTkn(res);
+			//TOdo check if subscribed instead of this
+			
+			//messaging().unsubscribeFromTopic(res, user.id).then().catch((error) => alert(error))
+
+			messaging().subscribeToTopic(user.id).then((message) => alert("subbed to "+user.id+" "+message)).catch((error) => alert(error))
+		  });
+		  
           await fetchDriverOrdersAPI(snapshot.id).then((orders) => {
             setSelfOrder(
               orders.docs.map((doc) => {
@@ -157,7 +169,7 @@ export default function Dashboard({ route, navigation }) {
   useEffect(() => {
     refresh();
   }, []);
-
+  
   return (
     <SafeAreaView style={{ height: "100%" }}>
       <Provider style={styles.container}>
